@@ -5,7 +5,7 @@ const app = express();
 // Serve static files from the current directory
 app.use(express.static(path.join(__dirname)));
 
-// Serve the index.html file
+// Serve the index.html file for the root route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
