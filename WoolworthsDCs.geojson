@@ -1,0 +1,14 @@
+{
+"type": "FeatureCollection",
+"name": "WoolworthsDCs",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 174.808292315567542, -36.949091377270292 ] } },
+{ "type": "Feature", "properties": { "id": 2, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 174.879835897499561, -37.005299527734742 ] } },
+{ "type": "Feature", "properties": { "id": 3, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 175.645096450039716, -40.335376177905026 ] } },
+{ "type": "Feature", "properties": { "id": 4, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 172.51076638874315, -43.55626564496724 ] } },
+{ "type": "Feature", "properties": { "id": 5, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 174.876238704029873, -37.010398513955487 ] } },
+{ "type": "Feature", "properties": { "id": 6, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 175.646990235645148, -40.33597132519548 ] } },
+{ "type": "Feature", "properties": { "id": 7, "name": "WGNI" }, "geometry": { "type": "Point", "coordinates": [ 172.535742900557722, -43.534994275642092 ] } }
+]
+}
