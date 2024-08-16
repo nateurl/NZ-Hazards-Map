@@ -59,7 +59,16 @@
       ];
 
       geojsonUrls.forEach(url => {
-        var geojsonLayer = new GeoJSONLayer({ url: url });
+        var geojsonLayer = new GeoJSONLayer({ 
+          url: url,
+          fields: [
+            {
+              name: "name",
+              types: "string"
+            },
+            // add other fields as needed based on GeoJSON structure
+            ]
+        });
         map.add(geojsonLayer);
       });
     });
