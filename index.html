@@ -58,9 +58,25 @@
         "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
       ];
 
-      geojsonUrls.forEach(url => {
-        var geojsonLayer = new GeoJSONLayer({ URL: url });
-        map.add(geojsonLayer);
+      geojsonUrls.forEach((url, index) => {
+        var geojsonLayer = new GeoJSONLayer({ 
+          url: url,
+          title: `GeoJSON Layer ${index + 1}`
+        });
+
+        geojsonLayer.load().then(() => {
+          console.log(`Layer ${index + 1} loaded successfully`);
+          map.add(geojsonLayer);
+        }).catch(error => {
+          console.error(`Error loading layer ${index + 1}:`, error);
+        });
+      });
+
+      // Log when the view is ready
+      view.when(() => {
+        console.log("Map view is ready");
+      }, (error) => {
+        console.error("Error loading map view:", error);
       });
     });
   </script>
