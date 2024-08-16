@@ -1,0 +1,62 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: url('path/to/your-texture.png'); /* Add your texture image here */
+  background-size: cover; /* Cover the entire background */
+  background-repeat: repeat; /* Repeat the texture */
+}
+
+header {
+  background-color: rgba(51, 51, 51, 0.9); /* Semi-transparent for texture visibility */
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+}
+
+nav ul li {
+  margin: 0 15px;
+}
+
+nav ul li a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(244, 244, 244, 0.9); /* Semi-transparent for texture visibility */
+}
+
+#viewDiv {
+  width: 100%;
+  height: 80vh;
+  border: none;
+}
+
+footer {
+  background-color: rgba(51, 51, 51, 0.9); /* Semi-transparent for texture visibility */
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+}
