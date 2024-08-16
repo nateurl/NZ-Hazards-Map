@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
   <title>Aa Logistics Map of New Zealand</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
@@ -25,16 +26,38 @@
   <footer>
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
+=======
+  <title>A logistics map of New Zealand</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+  <script src="https://js.arcgis.com/4.26/"></script>
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="viewDiv"></div>
+>>>>>>> 735e8bfc261eaa27ed8746f55e26cb81f2dd5346
   <script>
     require([
       "esri/Map",
       "esri/views/MapView",
       "esri/layers/GeoJSONLayer"
     ], function(Map, MapView, GeoJSONLayer) {
+<<<<<<< HEAD
+=======
+
+      // Create a map with a basemap
+>>>>>>> 735e8bfc261eaa27ed8746f55e26cb81f2dd5346
       var map = new Map({
         basemap: "streets"
       });
 
+<<<<<<< HEAD
       var view = new MapView({
         container: "viewDiv",
         map: map,
@@ -52,6 +75,27 @@
         var geojsonLayer = new GeoJSONLayer({ url: url });
         map.add(geojsonLayer);
       });
+=======
+      // Create a view for the map centered on New Zealand
+      var view = new MapView({
+        container: "viewDiv", // Reference to the DOM node that will contain the view
+        map: map, // Reference to the map object created before the view
+        center: [174.885971, -40.900557], // Longitude, latitude for New Zealand
+        zoom: 5 // Zoom level adjusted for New Zealand
+      });
+
+      // URL to the GeoJSON file on GitHub
+      var geojsonUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson";
+      var geojsonUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson";
+      var geojsonUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson";
+
+      // Create a GeoJSONLayer and add it to the map
+      var geojsonLayer = new GeoJSONLayer({
+        url: geojsonUrl
+      });
+
+      map.add(geojsonLayer);
+>>>>>>> 735e8bfc261eaa27ed8746f55e26cb81f2dd5346
     });
   </script>
 </body>
