@@ -34,133 +34,127 @@
   </footer>
 
   <script src="https://js.arcgis.com/4.26/"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("DOM fully loaded and parsed");
-  require([
-    "esri/Map",
-    "esri/views/MapView",
-    "esri/layers/GeoJSONLayer",
-    "esri/renderers/SimpleRenderer",
-    "esri/renderers/UniqueValueRenderer",
-    "esri/symbols/SimpleMarkerSymbol",
-    "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/SimpleFillSymbol",
-    "esri/symbols/PictureMarkerSymbol"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, UniqueValueRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, PictureMarkerSymbol) {
-    console.log("Modules loaded");
+  <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    console.log("DOM fully loaded and parsed");
+    require([
+      "esri/Map",
+      "esri/views/MapView",
+      "esri/layers/GeoJSONLayer",
+      "esri/renderers/SimpleRenderer",
+      "esri/renderers/UniqueValueRenderer",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/symbols/SimpleFillSymbol",
+      "esri/symbols/PictureMarkerSymbol"
+    ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, UniqueValueRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, PictureMarkerSymbol) {
+      console.log("Modules loaded");
 
-    var map = new Map({
-      basemap: "streets-vector"
-    });
-    console.log("Map created");
+      var map = new Map({
+        basemap: "streets-vector"
+      });
+      console.log("Map created");
 
-    var view = new MapView({
-      container: "viewDiv",
-      map: map,
-      center: [174.885971, -40.900557],
-      zoom: 5
-    });
-    console.log("View created");
+      var view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [174.885971, -40.900557],
+        zoom: 5
+      });
+      console.log("View created");
 
-    view.when(() => {
-      console.log("Map view is ready");
-    }, (error) => {
-      console.error("Error loading map view:", error);
-    });
+      view.when(() => {
+        console.log("Map view is ready");
+      }, (error) => {
+        console.error("Error loading map view:", error);
+      });
 
-    var geojsonUrls = [
-      "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson",
-      "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson",
-      "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
-    ];
+      var geojsonUrls = [
+        "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson",
+        "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson",
+        "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
+      ];
 
-    var colors = ["#B0E0E6", "#F0FFF0", "#E6E6FA"]; // Powder blue, Honeydew, Lavender
+      var colors = ["#B0E0E6", "#F0FFF0", "#E6E6FA"]; // Powder blue, Honeydew, Lavender
 
-    geojsonUrls.forEach((url, index) => {
-      console.log(`Fetching GeoJSON from ${url}`);
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-        .then(data => {
-          console.log(`GeoJSON data received for layer ${index + 1}`);
-          var renderer;
-          var geometryType = data.features[0].geometry.type;
+      geojsonUrls.forEach((url, index) => {
+        console.log(`Fetching GeoJSON from ${url}`);
+        fetch(url)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log(`GeoJSON data received for layer ${index + 1}`);
+            var renderer;
+            var geometryType = data.features[0].geometry.type;
 
-          console.log(`Layer ${index + 1} geometry type:`, geometryType);
+            console.log(`Layer ${index + 1} geometry type:`, geometryType);
 
-          switch(geometryType) {
-            case "Point":
-              if (index === 2) {
-                console.log("Creating renderer for seaports layer");
-                let pictureMarkerSymbol = {
-                  type: "picture-marker",
-                  url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
-                  width: "32px",
-                  height: "32px"
-                };
-
-                renderer = new UniqueValueRenderer({
-                  field: "name",
-                  defaultSymbol: new SimpleMarkerSymbol({
-                    color: colors[index],
-                    size: 8,
-                    outline: { color: "white", width: 1 }
-                  }),
-                  uniqueValueInfos: [{ value: "*", symbol: pictureMarkerSymbol }]
-                });
-              } else {
+            switch(geometryType) {
+              case "Point":
+                if (index === 2) { // Seaports layer
+                  console.log("Creating renderer for seaports layer");
+                  renderer = new SimpleRenderer({
+                    symbol: new PictureMarkerSymbol({
+                      url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
+                      width: "32px",
+                      height: "32px"
+                    })
+                  });
+                  console.log("Seaports renderer created with PictureMarkerSymbol");
+                } else {
+                  renderer = new SimpleRenderer({
+                    symbol: new SimpleMarkerSymbol({
+                      color: colors[index],
+                      size: 8,
+                      outline: { color: "white", width: 1 }
+                    })
+                  });
+                }
+                break;
+              case "LineString":
+              case "MultiLineString":
                 renderer = new SimpleRenderer({
-                  symbol: new SimpleMarkerSymbol({
+                  symbol: new SimpleLineSymbol({
                     color: colors[index],
-                    size: 8,
+                    width: 2
+                  })
+                });
+                break;
+              case "Polygon":
+              case "MultiPolygon":
+                renderer = new SimpleRenderer({
+                  symbol: new SimpleFillSymbol({
+                    color: colors[index],
                     outline: { color: "white", width: 1 }
                   })
                 });
-              }
-              break;
-            case "LineString":
-            case "MultiLineString":
-              renderer = new SimpleRenderer({
-                symbol: new SimpleLineSymbol({
-                  color: colors[index],
-                  width: 2
-                })
-              });
-              break;
-            case "Polygon":
-            case "MultiPolygon":
-              renderer = new SimpleRenderer({
-                symbol: new SimpleFillSymbol({
-                  color: colors[index],
-                  outline: { color: "white", width: 1 }
-                })
-              });
-              break;
-            default:
-              console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
-              return;
-          }
+                break;
+              default:
+                console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
+                return;
+            }
 
-          var layer = new GeoJSONLayer({
-            url: url,
-            renderer: renderer,
-            title: `Layer ${index + 1}`
+            var layer = new GeoJSONLayer({
+              url: url,
+              renderer: renderer,
+              title: `Layer ${index + 1}`
+            });
+
+            console.log(`Layer ${index + 1} created with renderer:`, renderer);
+
+            map.add(layer);
+            console.log(`Layer ${index + 1} added to map`);
+          })
+          .catch(error => {
+            console.error(`Error fetching or processing GeoJSON ${index + 1}:`, error);
           });
-
-          map.add(layer);
-          console.log(`Layer ${index + 1} added to map`);
-        })
-        .catch(error => {
-          console.error(`Error fetching or processing GeoJSON ${index + 1}:`, error);
-        });
+      });
     });
   });
-});
-</script>
+  </script>
 </body>
 </html>
