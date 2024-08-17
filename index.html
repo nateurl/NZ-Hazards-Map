@@ -37,8 +37,12 @@
     require([
       "esri/Map",
       "esri/views/MapView",
-      "esri/layers/GeoJSONLayer"
-    ], function(Map, MapView, GeoJSONLayer) {
+      "esri/layers/GeoJSONLayer",
+      "esri/renderers/SimpleRenderer",
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/symbols/SimpleFillSymbol"
+    ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol) {
       // Create a map with a basemap
       var map = new Map({
         basemap: "streets-vector"
@@ -58,18 +62,61 @@
         "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
       ];
 
-      geojsonUrls.forEach((url, index) => {
-        var geojsonLayer = new GeoJSONLayer({ 
-          url: url,
-          title: `GeoJSON Layer ${index + 1}`
-        });
+      var colors = ["#ff0000", "#00ff00", "#0000ff"]; // Red, Green, Blue
 
-        geojsonLayer.load().then(() => {
-          console.log(`Layer ${index + 1} loaded successfully`);
-          map.add(geojsonLayer);
-        }).catch(error => {
-          console.error(`Error loading layer ${index + 1}:`, error);
-        });
+      geojsonUrls.forEach((url, index) => {
+        fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            var renderer;
+            var geometryType = data.features[0].geometry.type;
+
+            switch(geometryType) {
+              case "Point":
+                renderer = new SimpleRenderer({
+                  symbol: new SimpleMarkerSymbol({
+                    color: colors[index],
+                    size: 8
+                  })
+                });
+                break;
+              case "LineString":
+                renderer = new SimpleRenderer({
+                  symbol: new SimpleLineSymbol({
+                    color: colors[index],
+                    width: 2
+                  })
+                });
+                break;
+              case "Polygon":
+                renderer = new SimpleRenderer({
+                  symbol: new SimpleFillSymbol({
+                    color: colors[index],
+                    outline: {
+                      color: [255, 255, 255, 0.5],
+                      width: 1
+                    }
+                  })
+                });
+                break;
+            }
+
+            var geojsonLayer = new GeoJSONLayer({ 
+              url: url,
+              title: `GeoJSON Layer ${index + 1}`,
+              renderer: renderer
+            });
+
+            geojsonLayer.load().then(() => {
+              console.log(`Layer ${index + 1} loaded successfully`);
+              map.add(geojsonLayer);
+            }).catch(error => {
+              console.error(`Error loading layer ${index + 1}:`, error);
+            });
+          })
+          .catch(error => {
+            console.error(`Error fetching GeoJSON ${index + 1}:`, error);
+          });
       });
 
       // Log when the view is ready
