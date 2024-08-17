@@ -83,9 +83,6 @@ document.addEventListener("DOMContentLoaded", function() {
       console.error("Error loading map view:", error);
     });
 
-    // Add layer controls to the UI
-    view.ui.add("layerControls", "top-right");
-
     var layerInfo = [
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/statehighways.geojson", name: "State highways" },
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
@@ -95,6 +92,8 @@ document.addEventListener("DOMContentLoaded", function() {
     ];
 
     var colors = ["#9bf59b", "#1F78B4", "#DAF7A6", "#96FEFA", "#FC4444"];
+    var lineLayers = [];
+    var pointLayers = [];
 
     layerInfo.forEach((info, index) => {
       fetch(info.url)
@@ -113,8 +112,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
           switch(geometryType) {
             case "Point":
-            case "Multipoint":
-              if (index === 2) { // Seaports layer
+            case "MultiPoint":
+              if (info.name === "Seaports") {
                 console.log("Creating renderer for seaports layer");
                 renderer = new SimpleRenderer({
                   symbol: new PictureMarkerSymbol({
@@ -139,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function() {
               renderer = new SimpleRenderer({
                 symbol: new SimpleLineSymbol({
                   color: colors[index],
-                  width: 1
+                  width: 1.5
                 })
               });
               break;
@@ -154,10 +153,12 @@ document.addEventListener("DOMContentLoaded", function() {
             title: info.name
           });
 
-          map.add(layer);
-          console.log(`Layer ${info.name} added to map`);
+          if (geometryType === "LineString" || geometryType === "MultiLineString") {
+            lineLayers.push(layer);
+          } else {
+            pointLayers.push(layer);
+          }
 
-          // Create button for layer
           var button = document.createElement("button");
           button.innerHTML = info.name;
           button.className = "layerButton active";
@@ -166,6 +167,10 @@ document.addEventListener("DOMContentLoaded", function() {
             this.classList.toggle("active");
           };
           document.getElementById("layerButtons").appendChild(button);
+
+          if (index === layerInfo.length - 1) {
+            map.addMany(lineLayers.concat(pointLayers));
+          }
         })
         .catch(error => {
           console.error(`Error loading layer ${info.name}:`, error);
