@@ -33,6 +33,7 @@
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
 
+  <script src="https://js.arcgis.com/4.26/"></script>
   <script>
   document.addEventListener("DOMContentLoaded", function() {
     require([
@@ -61,7 +62,7 @@
         "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
       ];
 
-      var colors = ["##B0E0E6", "#F0FFF0", "##E6E6FA"]; // Powder blue, Honeydew, Lavendar
+      var colors = ["#B0E0E6", "#F0FFF0", "#E6E6FA"]; // Powder blue, Honeydew, Lavender
       var layers = [];
 
       Promise.all(geojsonUrls.map((url, index) => 
@@ -119,30 +120,3 @@
           })
       )).then(results => {
         // Filter out any null results
-        layers = results.filter(result => result !== null);
-
-          // Sort layers: polygons first, then lines, then points
-        layers.sort((a, b) => {
-          const order = { "Polygon": 0, "MultiPolygon": 0, "LineString": 1, "MultiLineString": 1, "Point": 2 };
-          return order[a.type] - order[b.type];
-        });
-
-        // Add layers to the map in the sorted order
-        layers.forEach(({ layer }) => {
-          map.add(layer);
-          console.log(`Layer ${layer.title} added to map`);
-        });
-      }).catch(error => {
-        console.error("Error loading layers:", error);
-      });
-
-      view.when(() => {
-        console.log("Map view is ready");
-      }, (error) => {
-        console.error("Error loading map view:", error);
-      });
-    });
-  });
-</script>
-</body>
-</html>
