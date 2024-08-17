@@ -113,6 +113,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
           switch(geometryType) {
             case "Point":
+            case "Multipoint":
               if (index === 2) { // Seaports layer
                 console.log("Creating renderer for seaports layer");
                 renderer = new SimpleRenderer({
