@@ -33,7 +33,7 @@
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
 
-  <script src="https://js.arcgis.com/4.26/"></script>
+ <script src="https://js.arcgis.com/4.26/"></script>
 <script>
   console.log("Script started");
   require([
@@ -73,9 +73,8 @@
     ];
 
     var colors = ["#B0E0E6", "#F0FFF0", "#E6E6FA"]; // Powder blue, Honeydew, Lavender
-    var layers = [];
 
-    geojsonUrls.forEach((url, index) => {
+    Promise.all(geojsonUrls.map((url, index) => 
       fetch(url)
         .then(response => response.json())
         .then(data => {
@@ -120,7 +119,7 @@
               break;
             default:
               console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
-              return;
+              return null;
           }
 
           var layer = new GeoJSONLayer({
@@ -129,16 +128,13 @@
             title: `Layer ${index + 1}`
           });
 
-          layers.push({ layer: layer, type: geometryType });
           console.log(`Layer ${index + 1} created`);
+          return { layer: layer, type: geometryType };
         })
-        .catch(error => {
-          console.error(`Error loading layer ${index + 1}:`, error);
-        });
-    });
+    )).then(layers => {
+      // Filter out any null results
+      layers = layers.filter(layer => layer !== null);
 
-    // Wait for all layers to be created
-    Promise.all(geojsonUrls.map(url => fetch(url))).then(() => {
       // Sort layers: polygons first, then lines, then points
       layers.sort((a, b) => {
         const order = { "Polygon": 0, "MultiPolygon": 0, "LineString": 1, "MultiLineString": 1, "Point": 2 };
@@ -150,6 +146,8 @@
         map.add(layer);
         console.log(`Layer ${layer.title} added to map`);
       });
+    }).catch(error => {
+      console.error("Error loading layers:", error);
     });
   });
 </script>
