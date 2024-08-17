@@ -55,20 +55,28 @@
       console.log("Map created");
 
            var view = new MapView({
-        container: "viewDiv",
-        map: map,
-        extent: new Extent({
-          xmin: 166.0,
-          ymin: -47.5,
-          xmax: 178.5,
-          ymax: -34.0,
-          spatialReference: { wkid: 4326 }
-        }),
-        constraints: {
-          minZoom: 5,
-          maxZoom: 18
-        }
-      });
+  container: "viewDiv",
+  map: map,
+  extent: new Extent({
+    xmin: 166.0,
+    ymin: -47.5,
+    xmax: 178.5,
+    ymax: -34.0,
+    spatialReference: { wkid: 4326 }
+  }),
+  constraints: {
+    minZoom: 5,
+    maxZoom: 18,
+    rotationEnabled: false,
+    geometry: new Extent({
+      xmin: 166.0,
+      ymin: -47.5,
+      xmax: 178.5,
+      ymax: -34.0,
+      spatialReference: { wkid: 4326 }
+    })
+  }
+});
       console.log("View created");
 
       view.when(() => {
