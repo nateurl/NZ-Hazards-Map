@@ -45,7 +45,8 @@
       "esri/symbols/SimpleMarkerSymbol",
       "esri/symbols/SimpleLineSymbol",
       "esri/symbols/PictureMarkerSymbol"
-    ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol) {
+      "esri/geometry/Extent"
+    ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
       console.log("Modules loaded");
 
       var map = new Map({
@@ -53,11 +54,20 @@
       });
       console.log("Map created");
 
-      var view = new MapView({
+           var view = new MapView({
         container: "viewDiv",
         map: map,
-        center: [174.885971, -40.900557],
-        zoom: 5
+        extent: new Extent({
+          xmin: 166.0,
+          ymin: -47.5,
+          xmax: 178.5,
+          ymax: -34.0,
+          spatialReference: { wkid: 4326 }
+        }),
+        constraints: {
+          minZoom: 5,
+          maxZoom: 18
+        }
       });
       console.log("View created");
 
