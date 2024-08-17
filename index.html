@@ -28,141 +28,146 @@ NOICE
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
 
-<div id="layerControls">
-  <h3>Layers</h3>
-  <div id="layerButtons"></div>
-</div>
+<main>
+  <div id="layerControls">
+    <h3>Layers</h3>
+    <div id="layerButtons"></div>
+  </div>
+  <div id="viewDiv"></div>
+</main>
   
   <script src="https://js.arcgis.com/4.26/"></script>
   <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    console.log("DOM fully loaded and parsed");
-    require([
-      "esri/Map",
-      "esri/views/MapView",
-      "esri/layers/GeoJSONLayer",
-      "esri/renderers/SimpleRenderer",
-      "esri/symbols/SimpleMarkerSymbol",
-      "esri/symbols/SimpleLineSymbol",
-      "esri/symbols/PictureMarkerSymbol",
-      "esri/geometry/Extent"
-    ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
-      console.log("Modules loaded");
+ document.addEventListener("DOMContentLoaded", function() {
+  console.log("DOM fully loaded and parsed");
+  require([
+    "esri/Map",
+    "esri/views/MapView",
+    "esri/layers/GeoJSONLayer",
+    "esri/renderers/SimpleRenderer",
+    "esri/symbols/SimpleMarkerSymbol",
+    "esri/symbols/SimpleLineSymbol",
+    "esri/symbols/PictureMarkerSymbol",
+    "esri/geometry/Extent"
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
+    console.log("Modules loaded");
 
-      var map = new Map({
-        basemap: "streets-vector"
-      });
-      console.log("Map created");
+    var map = new Map({
+      basemap: "streets-vector"
+    });
+    console.log("Map created");
 
-          var view = new MapView({
-  container: "viewDiv",
-  map: map,
-  extent: new Extent({
-    xmin: 165.0,  // Slightly decreased
-    ymin: -48.0,  // Slightly decreased
-    xmax: 179.5,  // Slightly increased
-    ymax: -33.5,  // Slightly increased
-    spatialReference: { wkid: 4326 }
-  }),
-  constraints: {
-    minZoom: 4,   // Decreased from 5 to 4
-    maxZoom: 18,
-    rotationEnabled: false,
-    geometry: new Extent({
-      xmin: 165.0,  // Match the extent values
-      ymin: -48.0,
-      xmax: 179.5,
-      ymax: -33.5,
-      spatialReference: { wkid: 4326 }
-    })
-  }
-});
-      console.log("View created");
+    var view = new MapView({
+      container: "viewDiv",
+      map: map,
+      extent: new Extent({
+        xmin: 165.0,
+        ymin: -48.0,
+        xmax: 179.5,
+        ymax: -33.5,
+        spatialReference: { wkid: 4326 }
+      }),
+      constraints: {
+        minZoom: 4,
+        maxZoom: 18,
+        rotationEnabled: false,
+        geometry: new Extent({
+          xmin: 165.0,
+          ymin: -48.0,
+          xmax: 179.5,
+          ymax: -33.5,
+          spatialReference: { wkid: 4326 }
+        })
+      }
+    });
+    console.log("View created");
 
-      view.when(() => {
-        console.log("Map view is ready");
-      }, (error) => {
-        console.error("Error loading map view:", error);
-      });
+    view.when(() => {
+      console.log("Map view is ready");
+    }, (error) => {
+      console.error("Error loading map view:", error);
+    });
 
-      var geojsonUrls = [
-        "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson",
-        "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson",
-        "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
-      ];
+    var layerInfo = [
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" }
+    ];
 
-      var colors = ["#9bf59b", "#1F78B4", "#DAF7A6"]; // Powder blue, Honeydew, Lavender
+    var colors = ["#9bf59b", "#1F78B4", "#DAF7A6"];
 
-      var pointLayers = [];
-      var lineLayers = [];
+    layerInfo.forEach((info, index) => {
+      fetch(info.url)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log(`GeoJSON data received for layer ${index + 1}`);
+          var renderer;
+          var geometryType = data.features[0].geometry.type;
 
-      Promise.all(geojsonUrls.map((url, index) => 
-        fetch(url)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log(`GeoJSON data received for layer ${index + 1}`);
-            var renderer;
-            var geometryType = data.features[0].geometry.type;
+          console.log(`Layer ${index + 1} geometry type:`, geometryType);
 
-            console.log(`Layer ${index + 1} geometry type:`, geometryType);
-
-            switch(geometryType) {
-              case "Point":
-                if (index === 2) { // Seaports layer
-                  console.log("Creating renderer for seaports layer");
-                  renderer = new SimpleRenderer({
-                    symbol: new PictureMarkerSymbol({
-                      url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
-                      width: "12px",
-                      height: "12px"
-                    })
-                  });
-                } else {
-                  renderer = new SimpleRenderer({
-                    symbol: new SimpleMarkerSymbol({
-                      color: colors[index],
-                      size: 8,
-                      outline: { color: "white", width: 1 }
-                    })
-                  });
-                }
-                pointLayers.push(new GeoJSONLayer({ url: url, renderer: renderer, title: `Layer ${index + 1}` }));
-                break;
-              case "LineString":
-              case "MultiLineString":
+          switch(geometryType) {
+            case "Point":
+              if (index === 2) { // Seaports layer
+                console.log("Creating renderer for seaports layer");
                 renderer = new SimpleRenderer({
-                  symbol: new SimpleLineSymbol({
-                    color: colors[index],
-                    width: 1
+                  symbol: new PictureMarkerSymbol({
+                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
+                    width: "12px",
+                    height: "12px"
                   })
                 });
-                lineLayers.push(new GeoJSONLayer({ url: url, renderer: renderer, title: `Layer ${index + 1}` }));
-                break;
-              default:
-                console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
-                return null;
-            }
-          })
-      )).then(() => {
-        // Add line layers first
-        lineLayers.forEach(layer => {
-          map.add(layer);
-          console.log(`Line layer ${layer.title} added to map`);
-        });
+              } else {
+                renderer = new SimpleRenderer({
+                  symbol: new SimpleMarkerSymbol({
+                    color: colors[index],
+                    size: 8,
+                    outline: { color: "white", width: 1 }
+                  })
+                });
+              }
+              break;
+            case "LineString":
+            case "MultiLineString":
+              renderer = new SimpleRenderer({
+                symbol: new SimpleLineSymbol({
+                  color: colors[index],
+                  width: 1
+                })
+              });
+              break;
+            default:
+              console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
+              return null;
+          }
 
-        // Then add point layers
-        pointLayers.forEach(layer => {
+          var layer = new GeoJSONLayer({
+            url: info.url,
+            renderer: renderer,
+            title: info.name
+          });
+
           map.add(layer);
-          console.log(`Point layer ${layer.title} added to map`);
-        });
-      }).catch(error => {
-        console.error("Error loading layers:", error);
-      });
+          console.log(`Layer ${info.name} added to map`);
+
+          // Create button for layer
+          var button = document.createElement("button");
+          button.innerHTML = info.name;
+          button.className = "layerButton active";
+          button.onclick = function() {
+            layer.visible = !layer.visible;
+            this.classList.toggle("active");
+          };
+          document.getElementById("layerButtons").appendChild(button);
+        })
+        .catch(error => {
+          console.error(`Error loading layer ${info.name}:`, error);
+       });
     });
   });
   </script>
