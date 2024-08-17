@@ -27,7 +27,6 @@ NOICE
     <div id="layerButtons"></div>
   </div>
   <div id="viewDiv">
-    view.ui.add("layerControls", "top-right");
   </div>
 </main>
   <footer>
@@ -81,6 +80,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     view.when(() => {
       console.log("Map view is ready");
+      view.ui.add("layerControls", "top-right");
     }, (error) => {
       console.error("Error loading map view:", error);
     });
