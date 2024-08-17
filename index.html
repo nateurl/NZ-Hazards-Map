@@ -125,14 +125,17 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    layerInfo.forEach((info, index) => {
+    let lineLayers = [];
+    let pointLayers = [];
+
+    Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
       const layer = new GeoJSONLayer({
         url: info.url,
         title: info.name
       });
 
-      layer.load().then(() => {
+      return layer.load().then(() => {
         console.log(`Layer ${info.name} loaded`);
         console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
         const renderer = createRenderer(layer.geometryType, info, index);
@@ -140,8 +143,12 @@ document.addEventListener("DOMContentLoaded", function() {
           layer.renderer = renderer;
           console.log(`Renderer set for ${info.name}`);
         }
-        map.add(layer);
-        console.log(`Layer ${info.name} added to map`);
+
+        if (layer.geometryType === "polyline") {
+          lineLayers.push(layer);
+        } else {
+          pointLayers.push(layer);
+        }
 
         const button = document.createElement("button");
         button.innerHTML = info.name;
@@ -153,9 +160,16 @@ document.addEventListener("DOMContentLoaded", function() {
         };
         document.getElementById("layerButtons").appendChild(button);
         console.log(`Button created for ${info.name}`);
-      }).catch(error => {
-        console.error(`Error loading layer ${info.name}:`, error);
+
+        return layer;
       });
+    })).then((layers) => {
+      // Add line layers first, then point layers
+      map.addMany(lineLayers);
+      map.addMany(pointLayers);
+      console.log("All layers added to map");
+    }).catch(error => {
+      console.error("Error loading layers:", error);
     });
 
     // Add a check to see if layers are actually in the map
