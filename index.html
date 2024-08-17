@@ -93,8 +93,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function createRenderer(geometryType, info, index) {
       switch(geometryType) {
-        case "Point":
-        case "MultiPoint":
+        case "point":
           if (info.name === "Seaports") {
             return new SimpleRenderer({
               symbol: new PictureMarkerSymbol({
@@ -112,8 +111,7 @@ document.addEventListener("DOMContentLoaded", function() {
               })
             });
           }
-        case "LineString":
-        case "MultiLineString":
+        case "polyline":
           return new SimpleRenderer({
             symbol: new SimpleLineSymbol({
               color: colors[index],
@@ -126,53 +124,31 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    function loadGeoJSON(url) {
-      return fetch(url)
-        .then(response => response.json())
-        .catch(error => {
-          console.error('Error loading GeoJSON:', error);
-          return null;
-        });
-    }
-
-    function createLayer(geojsonData, info, index) {
-      if (!geojsonData) return null;
-
-      const geometryType = geojsonData.features[0].geometry.type;
-      const renderer = createRenderer(geometryType, info, index);
-
-      if (!renderer) return null;
-
+    layerInfo.forEach((info, index) => {
       const layer = new GeoJSONLayer({
-        source: geojsonData,
-        renderer: renderer,
+        url: info.url,
         title: info.name
       });
 
-      map.add(layer);
+      layer.when(() => {
+        const renderer = createRenderer(layer.geometryType, info, index);
+        if (renderer) {
+          layer.renderer = renderer;
+        }
+        map.add(layer);
 
-      const button = document.createElement("button");
-      button.innerHTML = info.name;
-      button.className = "layerButton active";
-      button.onclick = function() {
-        layer.visible = !layer.visible;
-        this.classList.toggle("active");
-      };
-      document.getElementById("layerButtons").appendChild(button);
-
-      return layer;
-    }
-
-    // Load and create layers
-    Promise.all(layerInfo.map(info => loadGeoJSON(info.url)))
-      .then(geojsonDataArray => {
-        geojsonDataArray.forEach((geojsonData, index) => {
-          createLayer(geojsonData, layerInfo[index], index);
-        });
-      })
-      .catch(error => {
-        console.error('Error creating layers:', error);
+        const button = document.createElement("button");
+        button.innerHTML = info.name;
+        button.className = "layerButton active";
+        button.onclick = function() {
+          layer.visible = !layer.visible;
+          this.classList.toggle("active");
+        };
+        document.getElementById("layerButtons").appendChild(button);
+      }).catch(error => {
+        console.error(`Error loading layer ${info.name}:`, error);
       });
+    });
   });
 });
 </script>
