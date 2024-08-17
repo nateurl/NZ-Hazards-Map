@@ -6,7 +6,6 @@
   <title>Aa Logistics Map of New Zealand</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
-
 </head>
 <body>
   <header>
@@ -24,8 +23,7 @@
     <h3>Layers</h3>
     <div id="layerButtons"></div>
   </div>
-  <div id="viewDiv">
-  </div>
+  <div id="viewDiv"></div>
 </main>
   <footer>
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
@@ -132,7 +130,13 @@ document.addEventListener("DOMContentLoaded", function() {
                   })
                 });
               }
+              pointLayers.push(new GeoJSONLayer({
+                url: info.url,
+                renderer: renderer,
+                title: info.name
+              }));
               break;
+
             case "LineString":
             case "MultiLineString":
               renderer = new SimpleRenderer({
@@ -141,33 +145,30 @@ document.addEventListener("DOMContentLoaded", function() {
                   width: 1.5
                 })
               });
+              lineLayers.push(new GeoJSONLayer({
+                url: info.url,
+                renderer: renderer,
+                title: info.name
+              }));
               break;
+
             default:
               console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
               return null;
           }
 
-          var layer = new GeoJSONLayer({
-            url: info.url,
-            renderer: renderer,
-            title: info.name
-          });
-
-          if (geometryType === "LineString" || geometryType === "MultiLineString") {
-            lineLayers.push(layer);
-          } else {
-            pointLayers.push(layer);
-          }
-
+          // Create button for layer
           var button = document.createElement("button");
           button.innerHTML = info.name;
           button.className = "layerButton active";
           button.onclick = function() {
+            const layer = pointLayers.concat(lineLayers).find(layer => layer.title === info.name);
             layer.visible = !layer.visible;
             this.classList.toggle("active");
           };
           document.getElementById("layerButtons").appendChild(button);
 
+          // Add layers to the map after all have been processed
           if (index === layerInfo.length - 1) {
             map.addMany(lineLayers.concat(pointLayers));
           }
