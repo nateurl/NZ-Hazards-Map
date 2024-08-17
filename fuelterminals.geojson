@@ -1,0 +1,18 @@
+{
+"type": "FeatureCollection",
+"name": "fuelterminals",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.493581993836358, -35.841986799513833 ] ] } },
+{ "type": "Feature", "properties": { "id": 2 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.85077077542266, -37.007503098145108 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 176.18571829570655, -37.663444034368538 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.026221592928863, -39.061645793974485 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 176.900917135699416, -39.482241717540788 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.786981448156126, -41.280228074278732 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 173.27648192510145, -41.261524008155192 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 172.719224699176294, -43.603777370834834 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 171.255324384847853, -44.389109776812674 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 170.624114378844467, -45.813045535233933 ] ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 168.329935277224138, -46.590508547121303 ] ] } }
+]
+}

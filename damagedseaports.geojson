@@ -1,0 +1,11 @@
+{
+"type": "FeatureCollection",
+"name": "damagedseaports",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 174.786961150503487, -41.280205057867327 ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 174.001446702905241, -41.278660878991069 ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 176.913814129637274, -39.475121694018583 ] } },
+{ "type": "Feature", "properties": { "id": null }, "geometry": { "type": "Point", "coordinates": [ 178.024265952145811, -38.676824609644164 ] } }
+]
+}
