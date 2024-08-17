@@ -1,17 +1,22 @@
-body {
+html, body {
   font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-image: url('path/to/your-texture.png'); /* Add your texture image here */
-  background-size: cover; /* Cover the entire background */
-  background-repeat: repeat; /* Repeat the texture */
+  background-image: url('path/to/your-texture.png');
+  background-size: cover;
+  background-repeat: repeat;
 }
 
 header {
-  background-color: rgba(51, 51, 51, 0.9); /* Semi-transparent for texture visibility */
+  background-color: rgba(51, 51, 51, 0.9);
   color: #fff;
   padding: 10px 20px;
   display: flex;
@@ -42,7 +47,7 @@ nav ul li a {
 
 main {
   flex: 1;
-  position: relative; /* Add this */
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -51,29 +56,15 @@ main {
 
 #viewDiv {
   width: 100%;
-  height: 100%; /* Change this from 80vh to 100% */
-  border: none;
-}
-
-#viewDiv {
-  width: 100%;
-  height: 80vh;
+  height: 100%;
   border: none;
 }
 
 footer {
-  background-color: rgba(51, 51, 51, 0.9); /* Semi-transparent for texture visibility */
+  background-color: rgba(51, 51, 51, 0.9);
   color: #fff;
   text-align: center;
   padding: 10px 0;
-}
-
-/* New CSS rules for map and layer controls */
-html, body, #viewDiv {
-  padding: 0;
-  margin: 0;
-  height: 100%;
-  width: 100%;
 }
 
 #layerControls {
