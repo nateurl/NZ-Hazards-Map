@@ -1,5 +1,3 @@
-NOICE
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,9 +90,11 @@ document.addEventListener("DOMContentLoaded", function() {
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" }
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" }
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/statehighways.geojson", name: "State highways" }
     ];
 
-    var colors = ["#9bf59b", "#1F78B4", "#DAF7A6"];
+    var colors = ["#9bf59b", "#1F78B4", "#DAF7A6", "#96fefa", "#FC4444"];
 
     layerInfo.forEach((info, index) => {
       fetch(info.url)
