@@ -102,6 +102,7 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
       switch(geometryType) {
         case "point":
+        case: "multipoint":
           if (info.name === "Seaports") {
             return new SimpleRenderer({
               symbol: new PictureMarkerSymbol({
