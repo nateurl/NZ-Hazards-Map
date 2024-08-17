@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     view.when(() => {
       console.log("Map view is ready");
-      view.ui.add("layerControls", "bottom-right");
+      view.ui.add("layerControls", "top-right");
     }, (error) => {
       console.error("Error loading map view:", error);
     });
@@ -86,10 +86,17 @@ document.addEventListener("DOMContentLoaded", function() {
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" },
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/damagedseaports.geojson", name: "Damaged seaports" },
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" },
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports" },
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites" }, 
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "Damaged CT sites" },   
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals" },
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/damagedfuelterminals.geojson", name: "Damaged fuel terminals" }, 
+      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/supermarkets.geojson", name: "Supermarket retailers" },      
     ];
 
-    var colors = ["#ff1515", "#1F78B4", "#99f983", "#9bc8f5", "#bceeff"];
+    var colors = ["#ff1515", "#1F78B4", "#95ec6f", "#9bc8f5", "#ff0000", "9efefe", "c2987c", "ff770c", "ff0000", "ffc500", "ff0000", "c900ff"];
 
     function createRenderer(geometryType, info, index) {
       console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
