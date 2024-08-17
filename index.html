@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var colors = ["#9bf59b", "#1F78B4", "#DAF7A6", "#96FEFA", "#FC4444"];
 
     function createRenderer(geometryType, info, index) {
+      console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
       switch(geometryType) {
         case "point":
           if (info.name === "Seaports") {
@@ -125,17 +126,22 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     layerInfo.forEach((info, index) => {
+      console.log(`Creating layer for ${info.name}`);
       const layer = new GeoJSONLayer({
         url: info.url,
         title: info.name
       });
 
-      layer.when(() => {
+      layer.load().then(() => {
+        console.log(`Layer ${info.name} loaded`);
+        console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
         const renderer = createRenderer(layer.geometryType, info, index);
         if (renderer) {
           layer.renderer = renderer;
+          console.log(`Renderer set for ${info.name}`);
         }
         map.add(layer);
+        console.log(`Layer ${info.name} added to map`);
 
         const button = document.createElement("button");
         button.innerHTML = info.name;
@@ -143,12 +149,19 @@ document.addEventListener("DOMContentLoaded", function() {
         button.onclick = function() {
           layer.visible = !layer.visible;
           this.classList.toggle("active");
+          console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
         };
         document.getElementById("layerButtons").appendChild(button);
+        console.log(`Button created for ${info.name}`);
       }).catch(error => {
         console.error(`Error loading layer ${info.name}:`, error);
       });
     });
+
+    // Add a check to see if layers are actually in the map
+    setTimeout(() => {
+      console.log("Layers in map:", map.layers.items.map(l => l.title));
+    }, 5000);
   });
 });
 </script>
