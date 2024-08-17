@@ -54,25 +54,25 @@
       });
       console.log("Map created");
 
-           var view = new MapView({
+          var view = new MapView({
   container: "viewDiv",
   map: map,
   extent: new Extent({
-    xmin: 166.0,
-    ymin: -47.5,
-    xmax: 178.5,
-    ymax: -34.0,
+    xmin: 165.0,  // Slightly decreased
+    ymin: -48.0,  // Slightly decreased
+    xmax: 179.5,  // Slightly increased
+    ymax: -33.5,  // Slightly increased
     spatialReference: { wkid: 4326 }
   }),
   constraints: {
-    minZoom: 5,
+    minZoom: 4,   // Decreased from 5 to 4
     maxZoom: 18,
     rotationEnabled: false,
     geometry: new Extent({
-      xmin: 166.0,
-      ymin: -47.5,
-      xmax: 178.5,
-      ymax: -34.0,
+      xmin: 165.0,  // Match the extent values
+      ymin: -48.0,
+      xmax: 179.5,
+      ymax: -33.5,
       spatialReference: { wkid: 4326 }
     })
   }
