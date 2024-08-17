@@ -33,7 +33,7 @@
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
 
- <script src="https://js.arcgis.com/4.26/"></script>
+<script src="https://js.arcgis.com/4.26/"></script>
 <script>
   console.log("Script started");
   require([
@@ -41,10 +41,12 @@
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
     "esri/renderers/SimpleRenderer",
+    "esri/renderers/UniqueValueRenderer",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/SimpleFillSymbol"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol) {
+    "esri/symbols/SimpleFillSymbol",
+    "esri/symbols/PictureMarkerSymbol"
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, UniqueValueRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, PictureMarkerSymbol) {
     console.log("Modules loaded");
 
     var map = new Map({
@@ -85,16 +87,38 @@
 
           switch(geometryType) {
             case "Point":
-              renderer = new SimpleRenderer({
-                symbol: new SimpleMarkerSymbol({
-                  color: colors[index],
-                  size: 8,
-                  outline: {
-                    color: "white",
-                    width: 1
-                  }
-                })
-              });
+              if (index === 2) { // Assuming seaports is the third layer
+                renderer = new UniqueValueRenderer({
+                  field: "name", // Replace with the actual field name that identifies seaports
+                  defaultSymbol: new SimpleMarkerSymbol({
+                    color: colors[index],
+                    size: 8,
+                    outline: {
+                      color: "white",
+                      width: 1
+                    }
+                  }),
+                  uniqueValueInfos: [{
+                    value: "*", // This will apply to all seaports
+                    symbol: new PictureMarkerSymbol({
+                      url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png", // Replace with actual URL
+                      width: "32px",
+                      height: "32px"
+                    })
+                  }]
+                });
+              } else {
+                renderer = new SimpleRenderer({
+                  symbol: new SimpleMarkerSymbol({
+                    color: colors[index],
+                    size: 8,
+                    outline: {
+                      color: "white",
+                      width: 1
+                    }
+                  })
+                });
+              }
               break;
             case "LineString":
             case "MultiLineString":
