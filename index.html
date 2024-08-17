@@ -87,27 +87,37 @@
 
           switch(geometryType) {
             case "Point":
-              if (index === 2) { // Assuming seaports is the third layer
-                renderer = new UniqueValueRenderer({
-                  field: "name", // Replace with the actual field name that identifies seaports
-                  defaultSymbol: new SimpleMarkerSymbol({
-                    color: colors[index],
-                    size: 8,
-                    outline: {
-                      color: "white",
-                      width: 1
-                    }
-                  }),
-                  uniqueValueInfos: [{
-                    value: "*", // This will apply to all seaports
-                    symbol: new PictureMarkerSymbol({
-                      url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png", // Replace with actual URL
-                      width: "32px",
-                      height: "32px"
-                    })
-                  }]
-                });
-              } else {
+if (index === 2) { // Assuming seaports is the third layer
+  console.log("Creating renderer for seaports layer");
+  let pictureMarkerSymbol = new PictureMarkerSymbol({
+    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
+    width: "32px",
+    height: "32px"
+  });
+
+  pictureMarkerSymbol.load().then(() => {
+    console.log("PictureMarkerSymbol loaded successfully");
+  }).catch(error => {
+    console.error("Error loading PictureMarkerSymbol:", error);
+  });
+
+  renderer = new UniqueValueRenderer({
+    field: "name", // Make sure this field exists in your GeoJSON
+    defaultSymbol: new SimpleMarkerSymbol({
+      color: colors[index],
+      size: 8,
+      outline: {
+        color: "white",
+        width: 1
+      }
+    }),
+    uniqueValueInfos: [{
+      value: "*", // This will apply to all seaports
+      symbol: pictureMarkerSymbol
+    }]
+  });
+  console.log("Seaports renderer created");
+} else {
                 renderer = new SimpleRenderer({
                   symbol: new SimpleMarkerSymbol({
                     color: colors[index],
