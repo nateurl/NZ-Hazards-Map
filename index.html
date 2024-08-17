@@ -1,104 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aa Logistics Map of New Zealand</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/4.26/esri/themes/light/main.css">
+  <style>
+    html, body, #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Aa Logistics</h1>
+    <nav>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <div id="viewDiv"></div>
+  </main>
   <footer>
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
+
+  <script src="https://js.arcgis.com/4.26/"></script>
   <script>
-  require([
-    "esri/Map",
-    "esri/views/MapView",
-    "esri/layers/GeoJSONLayer",
-    "esri/renderers/SimpleRenderer",
-    "esri/symbols/SimpleMarkerSymbol",
-    "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/SimpleFillSymbol"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol) {
-    var map = new Map({
-      basemap: "streets-vector"
-    });
-
-    var view = new MapView({
-      container: "viewDiv",
-      map: map,
-      center: [174.885971, -40.900557],
-      zoom: 5
-    });
-
-    var geojsonUrls = [
-      "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson",
-      "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson",
-      "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
-    ];
-
-    var colors = ["#ff0000", "#00ff00", "#0000ff"]; // Red, Green, Blue
-
-    geojsonUrls.forEach((url, index) => {
-      fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          console.log(`GeoJSON ${index + 1} structure:`, data.features[0]);
-          var renderer;
-          var geometryType = data.features[0].geometry.type;
-
-          console.log(`Layer ${index + 1} geometry type:`, geometryType);
-
-          switch(geometryType) {
-            case "Point":
-              renderer = new SimpleRenderer({
-                symbol: new SimpleMarkerSymbol({
-                  color: colors[index],
-                  size: 8
-                })
-              });
-              break;
-            case "LineString":
-            case "MultiLineString":
-              renderer = new SimpleRenderer({
-                symbol: new SimpleLineSymbol({
-                  color: colors[index],
-                  width: 2
-                })
-              });
-              break;
-            case "Polygon":
-            case "MultiPolygon":
-              renderer = new SimpleRenderer({
-                symbol: new SimpleFillSymbol({
-                  color: colors[index],
-                  outline: {
-                    color: [255, 255, 255, 0.5],
-                    width: 1
-                  }
-                })
-              });
-              break;
-            default:
-              console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
-              return;
-          }
-
-          var geojsonLayer = new GeoJSONLayer({ 
-            url: url,
-            title: `GeoJSON Layer ${index + 1}`,
-            renderer: renderer
-          });
-
-          geojsonLayer.load().then(() => {
-            console.log(`Layer ${index + 1} loaded successfully`);
-            map.add(geojsonLayer);
-          }).catch(error => {
-            console.error(`Error loading layer ${index + 1}:`, error);
-          });
-        })
-        .catch(error => {
-          console.error(`Error fetching GeoJSON ${index + 1}:`, error);
+    document.addEventListener("DOMContentLoaded", function() {
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/GeoJSONLayer",
+        "esri/renderers/SimpleRenderer",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/SimpleFillSymbol"
+      ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol) {
+        var map = new Map({
+          basemap: "streets-vector"
         });
-    });
 
-    view.when(() => {
-      console.log("Map view is ready");
-    }, (error) => {
-      console.error("Error loading map view:", error);
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [174.885971, -40.900557],
+          zoom: 5
+        });
+
+        var geojsonUrls = [
+          "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson",
+          "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson",
+          "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson"
+        ];
+
+        var colors = ["#ff0000", "#00ff00", "#0000ff"]; // Red, Green, Blue
+
+        geojsonUrls.forEach((url, index) => {
+          fetch(url)
+            .then(response => response.json())
+            .then(data => {
+              console.log(`GeoJSON ${index + 1} structure:`, data.features[0]);
+              var renderer;
+              var geometryType = data.features[0].geometry.type;
+
+              console.log(`Layer ${index + 1} geometry type:`, geometryType);
+
+              switch(geometryType) {
+                case "Point":
+                  renderer = new SimpleRenderer({
+                    symbol: new SimpleMarkerSymbol({
+                      color: colors[index],
+                      size: 8
+                    })
+                  });
+                  break;
+                case "LineString":
+                case "MultiLineString":
+                  renderer = new SimpleRenderer({
+                    symbol: new SimpleLineSymbol({
+                      color: colors[index],
+                      width: 2
+                    })
+                  });
+                  break;
+                case "Polygon":
+                case "MultiPolygon":
+                  renderer = new SimpleRenderer({
+                    symbol: new SimpleFillSymbol({
+                      color: colors[index],
+                      outline: {
+                        color: [255, 255, 255, 0.5],
+                        width: 1
+                      }
+                    })
+                  });
+                  break;
+                default:
+                  console.error(`Unsupported geometry type for layer ${index + 1}: ${geometryType}`);
+                  return;
+              }
+
+              var geojsonLayer = new GeoJSONLayer({ 
+                url: url,
+                title: `GeoJSON Layer ${index + 1}`,
+                renderer: renderer
+              });
+
+              geojsonLayer.load().then(() => {
+                console.log(`Layer ${index + 1} loaded successfully`);
+                map.add(geojsonLayer);
+              }).catch(error => {
+                console.error(`Error loading layer ${index + 1}:`, error);
+              });
+            })
+            .catch(error => {
+              console.error(`Error fetching GeoJSON ${index + 1}:`, error);
+            });
+        });
+
+        view.when(() => {
+          console.log("Map view is ready");
+        }, (error) => {
+          console.error("Error loading map view:", error);
+        });
+      });
     });
-  });
   </script>
 </body>
 </html>
