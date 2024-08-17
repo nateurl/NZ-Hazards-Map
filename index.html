@@ -33,6 +33,8 @@
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
 
+  document.addEventListener("DOMContentLoaded", function() {
+  // Your entire existing script here
 <script src="https://js.arcgis.com/4.26/"></script>
 <script>
   console.log("Script started");
@@ -160,6 +162,15 @@ if (index === 2) { // Assuming seaports is the third layer
             url: url,
             renderer: renderer,
             title: `Layer ${index + 1}`
+            fields: [
+    {
+      name: "name",
+      type: "string"
+    },
+    // Add other fields as needed
+  ]
+});
+          
           });
 
           console.log(`Layer ${index + 1} created`);
