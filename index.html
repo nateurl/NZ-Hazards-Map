@@ -34,8 +34,8 @@ NOICE
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
   <script src="https://js.arcgis.com/4.26/"></script>
-  <script>
- document.addEventListener("DOMContentLoaded", function() {
+<script>
+document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
     "esri/Map",
@@ -84,6 +84,9 @@ NOICE
     }, (error) => {
       console.error("Error loading map view:", error);
     });
+
+    // Add layer controls to the UI
+    view.ui.add("layerControls", "top-right");
 
     var layerInfo = [
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
@@ -164,9 +167,10 @@ NOICE
         })
         .catch(error => {
           console.error(`Error loading layer ${info.name}:`, error);
-       });
+        });
     });
   });
-  </script>
+});
+</script>
 </body>
 </html>
