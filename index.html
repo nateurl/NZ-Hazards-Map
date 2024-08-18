@@ -37,11 +37,12 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
     "esri/renderers/SimpleRenderer",
+    "esri/renderers/UniqueValueRenderer",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleLineSymbol",
     "esri/symbols/PictureMarkerSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, UniqueValueRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
     console.log("Modules loaded");
 
     var map = new Map({
@@ -94,12 +95,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
 
-    function createRingSVG(size, color, strokeWidth) {
-      return `data:image/svg+xml;utf8,<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="${size/2}" cy="${size/2}" r="${(size-strokeWidth)/2}" fill="none" stroke="${color}" stroke-width="${strokeWidth}"/>
-      </svg>`;
-    }
-
     function createRenderer(geometryType, info, index) {
       console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
       switch(geometryType) {
@@ -122,20 +117,17 @@ document.addEventListener("DOMContentLoaded", function() {
               })
             }); 
           } else if (info.name === "Impact points") {
-            const size = 80; // Size of the SVG in pixels
-            const color = "red"; // Color of the ring
-            const strokeWidth = 3; // Width of the ring stroke
-            const svgUrl = createRingSVG(size, color, strokeWidth);
-            
-            return {
-              type: "simple",
-              symbol: {
-                type: "picture-marker",
-                url: svgUrl,
-                width: size,
-                height: size
-              }
-            };
+            return new UniqueValueRenderer({
+              field: "ObjectID",  // Use a field that exists in your GeoJSON
+              defaultSymbol: new SimpleMarkerSymbol({
+                color: [0, 0, 0, 0],  // Transparent fill
+                size: "40px",
+                outline: {
+                  color: "red",
+                  width: "3px"
+                }
+              })
+            });
           } else {
             return new SimpleRenderer({
               symbol: new SimpleMarkerSymbol({
@@ -179,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (info.name === "Impact points") {
           layer.screenSizePerspectiveEnabled = false;
+          layer.featureReduction = null;
         }
 
         if (layer.geometryType === "polyline") {
