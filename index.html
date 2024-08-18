@@ -146,40 +146,40 @@ document.addEventListener("DOMContentLoaded", function() {
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
       if (info.name === "Impact points") {
-        const layer = new GraphicsLayer({
-          title: info.name
-        });
-
-        esriRequest(info.url, {
-          responseType: "json"
-        }).then(function(response) {
-          const geojson = response.data;
-          geojson.features.forEach(feature => {
-            const graphic = new Graphic({
-              geometry: {
-                type: "point",
-                longitude: feature.geometry.coordinates[0],
-                latitude: feature.geometry.coordinates[1]
-              },
-              symbol: {
-                type: "simple-marker",
-                style: "circle",
-                color: [0, 0, 0, 0],
-                size: "40px",
-                outline: {
-                  color: "red",
-                  width: "3px"
-                }
-              }
+        return fetch(info.url)
+          .then(response => response.json())
+          .then(data => {
+            const layer = new GraphicsLayer({
+              title: info.name
             });
-            layer.add(graphic);
-          });
-        }).catch(function(error) {
-          console.error("Error loading Impact points:", error);
-        });
 
-        pointLayers.push(layer);
-        return layer;
+            data.features.forEach(feature => {
+              const graphic = new Graphic({
+                geometry: {
+                  type: "point",
+                  longitude: feature.geometry.coordinates[0],
+                  latitude: feature.geometry.coordinates[1]
+                },
+                symbol: {
+                  type: "simple-marker",
+                  style: "circle",
+                  color: [0, 0, 0, 0],
+                  size: "40px",
+                  outline: {
+                    color: "red",
+                    width: "3px"
+                  }
+                }
+              });
+              layer.add(graphic);
+            });
+
+            pointLayers.push(layer);
+            return layer;
+          })
+          .catch(error => {
+            console.error("Error loading Impact points:", error);
+          });
       } else {
         const layer = new GeoJSONLayer({
           url: info.url,
