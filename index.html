@@ -94,21 +94,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"]
 
-    function createRenderer(geometryType, info, index) {
-      console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
-      switch(geometryType) {
-        case "point":
-        case "multipoint":
-          if (info.name === "Seaports") {
-            return new SimpleRenderer({
-              symbol: new PictureMarkerSymbol({
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
-                width: "12px",
-                height: "12px"
-              })
-            });
-
-} else if (info.name === "Fuel terminals") {
+   function createRenderer(geometryType, info, index) {
+  console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
+  switch(geometryType) {
+    case "point":
+    case "multipoint":
+      if (info.name === "Seaports") {
+        return new SimpleRenderer({
+          symbol: new PictureMarkerSymbol({
+            url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
+            width: "12px",
+            height: "12px"
+          })
+        });
+      } else if (info.name === "Fuel terminals") {
         return new SimpleRenderer({
           symbol: new PictureMarkerSymbol({
             url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
@@ -116,52 +115,43 @@ document.addEventListener("DOMContentLoaded", function() {
             height: "15px"
           })
         }); 
-                            // render for impact points
-} else if (info.name === "Impact points") {
-    return {
-        type: "simple",
-        symbol: {
-            type: "simple-marker",
+      } else if (info.name === "Impact points") {
+        return new SimpleRenderer({
+          symbol: new SimpleMarkerSymbol({
             color: [0, 0, 0, 0],  // Transparent fill
             size: 40,  // Base size
-            outline: {
-                color: "red",
-                width: 3
-            }
-        },
-        visualVariables: [{
+            outline: { color: "red", width: 3 }
+          }),
+          visualVariables: [{
             type: "size",
             valueExpression: "$view.scale",
             stops: [
-                { value: 1000, size: 40 },     // At close zoom
-                { value: 10000000, size: 40 }  // At far zoom
+              { value: 1000, size: 40 },     // At close zoom
+              { value: 10000000, size: 40 }  // At far zoom
             ]
-        }]
-    };
-}
-            
-            // add additional renders above 
-          } else {
-            return new SimpleRenderer({
-              symbol: new SimpleMarkerSymbol({
-                color: colors[index],
-                size: 8,
-                outline: { color: "white", width: 1 }
-              })
-            });
-          }
-        case "polyline":
-          return new SimpleRenderer({
-            symbol: new SimpleLineSymbol({
-              color: colors[index],
-              width: 1
-            })
-          });
-        default:
-          console.error(`Unsupported geometry type: ${geometryType}`);
-          return null;
+          }]
+        });
+      } else {
+        return new SimpleRenderer({
+          symbol: new SimpleMarkerSymbol({
+            color: colors[index],
+            size: 8,
+            outline: { color: "white", width: 1 }
+          })
+        });
       }
-    }
+    case "polyline":
+      return new SimpleRenderer({
+        symbol: new SimpleLineSymbol({
+          color: colors[index],
+          width: 1
+        })
+      });
+    default:
+      console.error(`Unsupported geometry type: ${geometryType}`);
+      return null;
+  }
+}
 
     let lineLayers = [];
     let pointLayers = [];
