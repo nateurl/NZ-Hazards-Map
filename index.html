@@ -117,15 +117,28 @@ document.addEventListener("DOMContentLoaded", function() {
           })
         }); 
                             // render for impact points
-                                     } else if (info.name === "Impact points") {
-                                // New renderer for impactpoint
-                                return new SimpleRenderer({
-                                  symbol: new SimpleMarkerSymbol({
-                                    color: [0,0,0,0],
-                                    size: 40,  // Increased size for impactpoint
-                                    outline: { color: "red", width: 3 }
-                                  })
-                                });    
+} else if (info.name === "Impact points") {
+    return {
+        type: "simple",
+        symbol: {
+            type: "simple-marker",
+            color: [0, 0, 0, 0],  // Transparent fill
+            size: 40,  // Base size
+            outline: {
+                color: "red",
+                width: 3
+            }
+        },
+        visualVariables: [{
+            type: "size",
+            valueExpression: "$view.scale",
+            stops: [
+                { value: 1000, size: 40 },     // At close zoom
+                { value: 10000000, size: 40 }  // At far zoom
+            ]
+        }]
+    };
+}
             
             // add additional renders above 
           } else {
