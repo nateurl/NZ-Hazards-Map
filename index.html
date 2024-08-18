@@ -188,24 +188,38 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    // ... rest of your code ...
+    if (layer.geometryType === "polyline") {
+      lineLayers.push(layer);
+    } else {
+      pointLayers.push(layer);
+    }
+
+    const button = document.createElement("button");
+    button.innerHTML = info.name;
+    button.className = "layerButton active";
+    button.onclick = function() {
+      layer.visible = !layer.visible;
+      this.classList.toggle("active");
+      console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+    };
+    document.getElementById("layerButtons").appendChild(button);
+    console.log(`Button created for ${info.name}`);
+
+    return layer;
   });
 })).then((layers) => {
-  // ... rest of your code ...
+  // Add line layers first, then point layers
+  map.addMany(lineLayers);
+  map.addMany(pointLayers);
+  console.log("All layers added to map");
+}).catch(error => {
+  console.error("Error loading layers:", error);
 });
-    })).then((layers) => {
-      // Add line layers first, then point layers
-      map.addMany(lineLayers);
-      map.addMany(pointLayers);
-      console.log("All layers added to map");
-    }).catch(error => {
-      console.error("Error loading layers:", error);
-    });
 
-    // Add a check to see if layers are actually in the map
-    setTimeout(() => {
-      console.log("Layers in map:", map.layers.items.map(l => l.title));
-    }, 5000);
+// Add a check to see if layers are actually in the map
+setTimeout(() => {
+  console.log("Layers in map:", map.layers.items.map(l => l.title));
+}, 5000);
   });
 });
 </script>
