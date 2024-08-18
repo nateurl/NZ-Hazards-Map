@@ -36,13 +36,15 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
+    "esri/layers/FeatureLayer",
     "esri/renderers/SimpleRenderer",
-    "esri/renderers/UniqueValueRenderer",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleLineSymbol",
     "esri/symbols/PictureMarkerSymbol",
-    "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, UniqueValueRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
+    "esri/geometry/Extent",
+    "esri/request",
+    "esri/Graphic"
+  ], function(Map, MapView, GeoJSONLayer, FeatureLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent, esriRequest, Graphic) {
     console.log("Modules loaded");
 
     var map = new Map({
@@ -116,18 +118,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 height: "15px"
               })
             }); 
-          } else if (info.name === "Impact points") {
-            return new UniqueValueRenderer({
-              field: "ObjectID",  // Use a field that exists in your GeoJSON
-              defaultSymbol: new SimpleMarkerSymbol({
-                color: [0, 0, 0, 0],  // Transparent fill
-                size: "40px",
-                outline: {
-                  color: "red",
-                  width: "3px"
-                }
-              })
-            });
           } else {
             return new SimpleRenderer({
               symbol: new SimpleMarkerSymbol({
@@ -155,45 +145,98 @@ document.addEventListener("DOMContentLoaded", function() {
 
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
-      const layer = new GeoJSONLayer({
-        url: info.url,
-        title: info.name
-      });
+      if (info.name === "Impact points") {
+        return esriRequest(info.url, {
+          responseType: "json"
+        }).then(function(response) {
+          const geojson = response.data;
+          const graphics = geojson.features.map(feature => {
+            return new Graphic({
+              geometry: {
+                type: "point",
+                longitude: feature.geometry.coordinates[0],
+                latitude: feature.geometry.coordinates[1]
+              },
+              attributes: feature.properties
+            });
+          });
 
-      return layer.load().then(() => {
-        console.log(`Layer ${info.name} loaded`);
-        console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
-        const renderer = createRenderer(layer.geometryType, info, index);
-        if (renderer) {
-          layer.renderer = renderer;
-          console.log(`Renderer set for ${info.name}`);
-        }
+          const layer = new FeatureLayer({
+            source: graphics,
+            title: info.name,
+            renderer: {
+              type: "simple",
+              symbol: {
+                type: "simple-marker",
+                size: 1,
+                color: [0, 0, 0, 0],
+                outline: {
+                  width: 0,
+                  color: [0, 0, 0, 0]
+                }
+              }
+            },
+            labelingInfo: [{
+              symbol: {
+                type: "text",
+                color: "red",
+                font: {
+                  family: "Arial",
+                  size: 0
+                },
+                haloColor: "white",
+                haloSize: "1px"
+              },
+              labelPlacement: "center-center",
+              labelExpressionInfo: {
+                expression: "Text('●')"
+              },
+              maxScale: 0,
+              minScale: 0
+            }]
+          });
 
-        if (info.name === "Impact points") {
-          layer.screenSizePerspectiveEnabled = false;
-          layer.featureReduction = null;
-        }
-
-        if (layer.geometryType === "polyline") {
-          lineLayers.push(layer);
-        } else {
           pointLayers.push(layer);
-        }
+          return layer;
+        });
+      } else {
+        const layer = new GeoJSONLayer({
+          url: info.url,
+          title: info.name
+        });
 
+        return layer.load().then(() => {
+          console.log(`Layer ${info.name} loaded`);
+          console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
+          const renderer = createRenderer(layer.geometryType, info, index);
+          if (renderer) {
+            layer.renderer = renderer;
+            console.log(`Renderer set for ${info.name}`);
+          }
+
+          if (layer.geometryType === "polyline") {
+            lineLayers.push(layer);
+          } else {
+            pointLayers.push(layer);
+          }
+
+          return layer;
+        });
+      }
+    })).then((layers) => {
+      layers.forEach(layer => {
         const button = document.createElement("button");
-        button.innerHTML = info.name;
+        button.innerHTML = layer.title;
         button.className = "layerButton active";
         button.onclick = function() {
           layer.visible = !layer.visible;
           this.classList.toggle("active");
-          console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+          console.log(`Toggled visibility for ${layer.title}: ${layer.visible}`);
         };
         document.getElementById("layerButtons").appendChild(button);
-        console.log(`Button created for ${info.name}`);
-
-        return layer;
+        console.log(`Button created for ${layer.title}`);
       });
-    })).then((layers) => {
+
       map.addMany(lineLayers);
       map.addMany(pointLayers);
       console.log("All layers added to map");
