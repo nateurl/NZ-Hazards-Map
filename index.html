@@ -36,15 +36,12 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
-    "esri/layers/GraphicsLayer",
     "esri/renderers/SimpleRenderer",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleLineSymbol",
     "esri/symbols/PictureMarkerSymbol",
-    "esri/geometry/Extent",
-    "esri/request",
-    "esri/Graphic"
-  ], function(Map, MapView, GeoJSONLayer, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent, esriRequest, Graphic) {
+    "esri/geometry/Extent"
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
     console.log("Modules loaded");
 
     var map = new Map({
@@ -80,16 +77,6 @@ document.addEventListener("DOMContentLoaded", function() {
     view.when(() => {
       console.log("Map view is ready");
       view.ui.add("layerControls", "bottom-right");
-
-      // Find the Impact points layer
-      const impactPointsLayer = view.map.allLayers.find(layer => layer.title === "Impact points");
-      if (impactPointsLayer) {
-        view.whenLayerView(impactPointsLayer).then(layerView => {
-          console.log("Impact points layer extent:", layerView.layer.fullExtent);
-        });
-      } else {
-        console.warn("Impact points layer not found in the map");
-      }
     }, (error) => {
       console.error("Error loading map view:", error);
     });
@@ -105,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function() {
       { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points" },
     ];
 
-    var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+    var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"]
 
     function createRenderer(geometryType, info, index) {
       console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
@@ -120,14 +107,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 height: "12px"
               })
             });
-          } else if (info.name === "Fuel terminals") {
-            return new SimpleRenderer({
-              symbol: new PictureMarkerSymbol({
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
-                width: "12px",
-                height: "15px"
-              })
-            }); 
+
+} else if (info.name === "Fuel terminals") {
+        return new SimpleRenderer({
+          symbol: new PictureMarkerSymbol({
+            url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
+            width: "12px",
+            height: "15px"
+          })
+        }); 
+            // add additional renders above 
           } else {
             return new SimpleRenderer({
               symbol: new SimpleMarkerSymbol({
@@ -150,111 +139,49 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    let layers = [];
+    let lineLayers = [];
+    let pointLayers = [];
 
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
-      if (info.name === "Impact points") {
-        console.log("Attempting to load Impact points");
-        return fetch(info.url)
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            console.log("Impact points GeoJSON fetched successfully");
-            return response.json();
-          })
-          .then(data => {
-            console.log("Impact points GeoJSON parsed successfully");
-            console.log("Impact points data:", data);
-            
-            if (!data.features || data.features.length === 0) {
-              console.warn("No features found in Impact points GeoJSON");
-              return null;
-            }
+      const layer = new GeoJSONLayer({
+        url: info.url,
+        title: info.name
+      });
 
-            const layer = new GraphicsLayer({
-              title: info.name
-            });
+      return layer.load().then(() => {
+        console.log(`Layer ${info.name} loaded`);
+        console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
+        const renderer = createRenderer(layer.geometryType, info, index);
+        if (renderer) {
+          layer.renderer = renderer;
+          console.log(`Renderer set for ${info.name}`);
+        }
 
-            data.features.forEach((feature, i) => {
-              if (!feature.geometry || !feature.geometry.coordinates) {
-                console.warn(`Invalid geometry for feature ${i}`);
-                return;
-              }
+        if (layer.geometryType === "polyline") {
+          lineLayers.push(layer);
+        } else {
+          pointLayers.push(layer);
+        }
 
-              const graphic = new Graphic({
-                geometry: {
-                  type: "point",
-                  longitude: feature.geometry.coordinates[0],
-                  latitude: feature.geometry.coordinates[1]
-                },
-                symbol: {
-                  type: "simple-marker",
-                  style: "circle",
-                  color: [255, 0, 0, 0.5],  // Semi-transparent red
-                  size: "20px",
-                  outline: {
-                    color: [255, 0, 0, 1],  // Solid red
-                    width: "2px"
-                  }
-                }
-              });
-              layer.add(graphic);
-            });
-
-            console.log(`Added ${layer.graphics.length} impact points to the layer`);
-            return layer;
-          })
-          .catch(error => {
-            console.error("Error loading Impact points:", error);
-            return null;
-          });
-      } else {
-        const layer = new GeoJSONLayer({
-          url: info.url,
-          title: info.name
-        });
-
-        return layer.load().then(() => {
-          console.log(`Layer ${info.name} loaded`);
-          console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
-          const renderer = createRenderer(layer.geometryType, info, index);
-          if (renderer) {
-            layer.renderer = renderer;
-            console.log(`Renderer set for ${info.name}`);
-          }
-          return layer;
-        });
-      }
-    })).then((loadedLayers) => {
-      layers = loadedLayers.filter(layer => layer !== null);
-      layers.forEach(layer => {
         const button = document.createElement("button");
-        button.innerHTML = layer.title;
+        button.innerHTML = info.name;
         button.className = "layerButton active";
         button.onclick = function() {
           layer.visible = !layer.visible;
           this.classList.toggle("active");
-          console.log(`Toggled visibility for ${layer.title}: ${layer.visible}`);
+          console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
         };
         document.getElementById("layerButtons").appendChild(button);
-        console.log(`Button created for ${layer.title}`);
-      });
+        console.log(`Button created for ${info.name}`);
 
-      map.addMany(layers);  // Add all layers at once
+        return layer;
+      });
+    })).then((layers) => {
+      // Add line layers first, then point layers
+      map.addMany(lineLayers);
+      map.addMany(pointLayers);
       console.log("All layers added to map");
-
-      // Zoom to the full extent of all layers
-      view.when(() => {
-        const allExtents = layers
-          .filter(layer => layer.fullExtent)
-          .map(layer => layer.fullExtent);
-        if (allExtents.length > 0) {
-          const fullExtent = allExtents.reduce((acc, extent) => acc.union(extent));
-          view.goTo(fullExtent);
-        }
-      });
     }).catch(error => {
       console.error("Error loading layers:", error);
     });
