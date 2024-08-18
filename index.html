@@ -143,40 +143,32 @@ document.addEventListener("DOMContentLoaded", function() {
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
       let layer;
-      if (info.name === "Impact points") {
-        layer = new GeoJSONLayer({
-          url: info.url,
-          title: info.name,
-          renderer: {
-            type: "simple",
-            symbol: {
-              type: "simple-marker",
-              color: [0, 0, 0, 0],  // Transparent fill
-              size: 1,  // Minimal size
-              outline: {
-                color: [0, 0, 0, 0],  // Transparent outline
-                width: 0
-              }
-            }
-          },
-          labelingInfo: [{
-            symbol: {
-              type: "text",
-              color: [0, 0, 0, 0],
-              font: {
-                size: 0,
-                family: "Arial"
-              }
-            },
-            labelPlacement: "center-center",
-            labelExpressionInfo: {
-              expression: "Text('●')"  // Unicode circle character
-            },
-            maxScale: 0,
-            minScale: 0
-          }]
-        });
-      } else {
+ if (info.name === "Impact points") {
+    layer = new GeoJSONLayer({
+      url: info.url,
+      title: info.name,
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: "red",
+          size: 40,
+          outline: {
+            color: "white",
+            width: 2
+          }
+        }
+      },
+      popupTemplate: {
+        title: "Impact Point",
+        content: "This is an impact point."
+      }
+    });
+
+    layer.when(() => {
+      view.goTo(layer.fullExtent);
+    });
+  } else {
         layer = new GeoJSONLayer({
           url: info.url,
           title: info.name
@@ -209,33 +201,33 @@ document.addEventListener("DOMContentLoaded", function() {
           }
         }
 
-        if (layer.geometryType === "polyline") {
-          lineLayers.push(layer);
-        } else {
-          pointLayers.push(layer);
-        }
+       if (layer.geometryType === "polyline") {
+      lineLayers.push(layer);
+    } else {
+      pointLayers.push(layer);
+    }
 
-        const button = document.createElement("button");
-        button.innerHTML = info.name;
-        button.className = "layerButton active";
-        button.onclick = function() {
-          layer.visible = !layer.visible;
-          this.classList.toggle("active");
-          console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-        };
-        document.getElementById("layerButtons").appendChild(button);
-        console.log(`Button created for ${info.name}`);
+    const button = document.createElement("button");
+    button.innerHTML = info.name;
+    button.className = "layerButton active";
+    button.onclick = function() {
+      layer.visible = !layer.visible;
+      this.classList.toggle("active");
+      console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+    };
+    document.getElementById("layerButtons").appendChild(button);
+    console.log(`Button created for ${info.name}`);
 
-        return layer;
-      });
-    })).then((layers) => {
-      // Add line layers first, then point layers
-      map.addMany(lineLayers);
-      map.addMany(pointLayers);
-      console.log("All layers added to map");
-    }).catch(error => {
-      console.error("Error loading layers:", error);
-    });
+    return layer;
+  });
+})).then((layers) => {
+  // Add line layers first, then point layers
+  map.addMany(lineLayers);
+  map.addMany(pointLayers);
+  console.log("All layers added to map");
+}).catch(error => {
+  console.error("Error loading layers:", error);
+});
 
     // Add a check to see if layers are actually in the map
     setTimeout(() => {
