@@ -1,0 +1,13 @@
+{
+"type": "FeatureCollection",
+"name": "impactpoints",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "fid": 0 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 178.024336961629132, -38.676869241811403 ] ] } },
+{ "type": "Feature", "properties": { "fid": 1 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 176.914125346393178, -39.475155885145128 ] ] } },
+{ "type": "Feature", "properties": { "fid": 2 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.786629891918039, -41.280111615028346 ] ] } },
+{ "type": "Feature", "properties": { "fid": 3 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.001453634625562, -41.278547088291241 ] ] } },
+{ "type": "Feature", "properties": { "fid": 4 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 174.061465626356181, -41.945469174190016 ] ] } },
+{ "type": "Feature", "properties": { "fid": 5 }, "geometry": { "type": "MultiPoint", "coordinates": [ [ 177.28574772335412, -39.088177863983354 ] ] } }
+]
+}
