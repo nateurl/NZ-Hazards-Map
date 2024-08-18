@@ -146,14 +146,34 @@ document.addEventListener("DOMContentLoaded", function() {
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
       if (info.name === "Impact points") {
+        console.log("Attempting to load Impact points");
         return fetch(info.url)
-          .then(response => response.json())
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            console.log("Impact points GeoJSON fetched successfully");
+            return response.json();
+          })
           .then(data => {
+            console.log("Impact points GeoJSON parsed successfully");
+            console.log("Impact points data:", data);
+            
+            if (!data.features || data.features.length === 0) {
+              console.warn("No features found in Impact points GeoJSON");
+              return null;
+            }
+
             const layer = new GraphicsLayer({
               title: info.name
             });
 
-            data.features.forEach(feature => {
+            data.features.forEach((feature, i) => {
+              if (!feature.geometry || !feature.geometry.coordinates) {
+                console.warn(`Invalid geometry for feature ${i}`);
+                return;
+              }
+
               const graphic = new Graphic({
                 geometry: {
                   type: "point",
@@ -174,11 +194,13 @@ document.addEventListener("DOMContentLoaded", function() {
               layer.add(graphic);
             });
 
+            console.log(`Added ${layer.graphics.length} impact points to the layer`);
             pointLayers.push(layer);
             return layer;
           })
           .catch(error => {
             console.error("Error loading Impact points:", error);
+            return null;
           });
       } else {
         const layer = new GeoJSONLayer({
@@ -205,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
       }
     })).then((layers) => {
+      layers = layers.filter(layer => layer !== null);
       layers.forEach(layer => {
         const button = document.createElement("button");
         button.innerHTML = layer.title;
