@@ -80,6 +80,16 @@ document.addEventListener("DOMContentLoaded", function() {
     view.when(() => {
       console.log("Map view is ready");
       view.ui.add("layerControls", "bottom-right");
+
+      // Find the Impact points layer
+      const impactPointsLayer = view.map.allLayers.find(layer => layer.title === "Impact points");
+      if (impactPointsLayer) {
+        view.whenLayerView(impactPointsLayer).then(layerView => {
+          console.log("Impact points layer extent:", layerView.layer.fullExtent);
+        });
+      } else {
+        console.warn("Impact points layer not found in the map");
+      }
     }, (error) => {
       console.error("Error loading map view:", error);
     });
@@ -140,8 +150,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     }
 
-    let lineLayers = [];
-    let pointLayers = [];
+    let layers = [];
 
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
@@ -183,11 +192,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 symbol: {
                   type: "simple-marker",
                   style: "circle",
-                  color: [0, 0, 0, 0],
-                  size: "40px",
+                  color: [255, 0, 0, 0.5],  // Semi-transparent red
+                  size: "20px",
                   outline: {
-                    color: "red",
-                    width: "3px"
+                    color: [255, 0, 0, 1],  // Solid red
+                    width: "2px"
                   }
                 }
               });
@@ -195,7 +204,6 @@ document.addEventListener("DOMContentLoaded", function() {
             });
 
             console.log(`Added ${layer.graphics.length} impact points to the layer`);
-            pointLayers.push(layer);
             return layer;
           })
           .catch(error => {
@@ -216,18 +224,11 @@ document.addEventListener("DOMContentLoaded", function() {
             layer.renderer = renderer;
             console.log(`Renderer set for ${info.name}`);
           }
-
-          if (layer.geometryType === "polyline") {
-            lineLayers.push(layer);
-          } else {
-            pointLayers.push(layer);
-          }
-
           return layer;
         });
       }
-    })).then((layers) => {
-      layers = layers.filter(layer => layer !== null);
+    })).then((loadedLayers) => {
+      layers = loadedLayers.filter(layer => layer !== null);
       layers.forEach(layer => {
         const button = document.createElement("button");
         button.innerHTML = layer.title;
@@ -241,9 +242,19 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log(`Button created for ${layer.title}`);
       });
 
-      map.addMany(lineLayers);
-      map.addMany(pointLayers);
+      map.addMany(layers);  // Add all layers at once
       console.log("All layers added to map");
+
+      // Zoom to the full extent of all layers
+      view.when(() => {
+        const allExtents = layers
+          .filter(layer => layer.fullExtent)
+          .map(layer => layer.fullExtent);
+        if (allExtents.length > 0) {
+          const fullExtent = allExtents.reduce((acc, extent) => acc.union(extent));
+          view.goTo(fullExtent);
+        }
+      });
     }).catch(error => {
       console.error("Error loading layers:", error);
     });
