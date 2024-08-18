@@ -94,6 +94,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
 
+    function createRingSVG(size, color, strokeWidth) {
+      return `data:image/svg+xml;utf8,<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="${size/2}" cy="${size/2}" r="${(size-strokeWidth)/2}" fill="none" stroke="${color}" stroke-width="${strokeWidth}"/>
+      </svg>`;
+    }
+
     function createRenderer(geometryType, info, index) {
       console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
       switch(geometryType) {
@@ -116,16 +122,18 @@ document.addEventListener("DOMContentLoaded", function() {
               })
             }); 
           } else if (info.name === "Impact points") {
+            const size = 80; // Size of the SVG in pixels
+            const color = "red"; // Color of the ring
+            const strokeWidth = 3; // Width of the ring stroke
+            const svgUrl = createRingSVG(size, color, strokeWidth);
+            
             return {
               type: "simple",
               symbol: {
-                type: "simple-marker",
-                color: "red",
-                size: "40px",
-                outline: {
-                  color: "white",
-                  width: 2
-                }
+                type: "picture-marker",
+                url: svgUrl,
+                width: size,
+                height: size
               }
             };
           } else {
@@ -167,6 +175,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (renderer) {
           layer.renderer = renderer;
           console.log(`Renderer set for ${info.name}`);
+        }
+
+        if (info.name === "Impact points") {
+          layer.screenSizePerspectiveEnabled = false;
         }
 
         if (layer.geometryType === "polyline") {
