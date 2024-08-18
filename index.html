@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"]
 
-   function createRenderer(geometryType, info, index) {
+  function createRenderer(geometryType, info, index) {
   console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
   switch(geometryType) {
     case "point":
@@ -116,21 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
           })
         }); 
       } else if (info.name === "Impact points") {
-        return new SimpleRenderer({
-          symbol: new SimpleMarkerSymbol({
-            color: [0, 0, 0, 0],  // Transparent fill
-            size: 40,  // Base size
-            outline: { color: "red", width: 3 }
-          }),
-          visualVariables: [{
-            type: "size",
-            valueExpression: "$view.scale",
-            stops: [
-              { value: 1000, size: 40 },     // At close zoom
-              { value: 10000000, size: 40 }  // At far zoom
-            ]
-          }]
-        });
+        return null; // We'll handle this separately
       } else {
         return new SimpleRenderer({
           symbol: new SimpleMarkerSymbol({
@@ -157,40 +143,56 @@ document.addEventListener("DOMContentLoaded", function() {
     let pointLayers = [];
 
     Promise.all(layerInfo.map((info, index) => {
-      console.log(`Creating layer for ${info.name}`);
-      const layer = new GeoJSONLayer({
-        url: info.url,
-        title: info.name
-      });
+  console.log(`Creating layer for ${info.name}`);
+  let layer;
+  if (info.name === "Impact points") {
+    layer = new GeoJSONLayer({
+      url: info.url,
+      title: info.name,
+      renderer: {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: [0, 0, 0, 0],  // Transparent fill
+          size: 40,  // Base size
+          outline: {
+            color: "red",
+            width: 3
+          }
+        },
+        visualVariables: [{
+          type: "size",
+          valueExpression: "$view.scale",
+          stops: [
+            { value: 1000, size: 40 },     // At close zoom
+            { value: 10000000, size: 40 }  // At far zoom
+          ]
+        }]
+      }
+    });
+  } else {
+    layer = new GeoJSONLayer({
+      url: info.url,
+      title: info.name
+    });
+  }
 
-      return layer.load().then(() => {
-        console.log(`Layer ${info.name} loaded`);
-        console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
-        const renderer = createRenderer(layer.geometryType, info, index);
-        if (renderer) {
-          layer.renderer = renderer;
-          console.log(`Renderer set for ${info.name}`);
-        }
+  return layer.load().then(() => {
+    console.log(`Layer ${info.name} loaded`);
+    console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
+    if (info.name !== "Impact points") {
+      const renderer = createRenderer(layer.geometryType, info, index);
+      if (renderer) {
+        layer.renderer = renderer;
+        console.log(`Renderer set for ${info.name}`);
+      }
+    }
 
-        if (layer.geometryType === "polyline") {
-          lineLayers.push(layer);
-        } else {
-          pointLayers.push(layer);
-        }
-
-        const button = document.createElement("button");
-        button.innerHTML = info.name;
-        button.className = "layerButton active";
-        button.onclick = function() {
-          layer.visible = !layer.visible;
-          this.classList.toggle("active");
-          console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-        };
-        document.getElementById("layerButtons").appendChild(button);
-        console.log(`Button created for ${info.name}`);
-
-        return layer;
-      });
+    // ... rest of your code ...
+  });
+})).then((layers) => {
+  // ... rest of your code ...
+});
     })).then((layers) => {
       // Add line layers first, then point layers
       map.addMany(lineLayers);
