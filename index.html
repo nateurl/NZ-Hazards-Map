@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
-    "esri/layers/FeatureLayer",
+    "esri/layers/GraphicsLayer",
     "esri/renderers/SimpleRenderer",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleLineSymbol",
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/geometry/Extent",
     "esri/request",
     "esri/Graphic"
-  ], function(Map, MapView, GeoJSONLayer, FeatureLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent, esriRequest, Graphic) {
+  ], function(Map, MapView, GeoJSONLayer, GraphicsLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent, esriRequest, Graphic) {
     console.log("Modules loaded");
 
     var map = new Map({
@@ -146,59 +146,40 @@ document.addEventListener("DOMContentLoaded", function() {
     Promise.all(layerInfo.map((info, index) => {
       console.log(`Creating layer for ${info.name}`);
       if (info.name === "Impact points") {
-        return esriRequest(info.url, {
+        const layer = new GraphicsLayer({
+          title: info.name
+        });
+
+        esriRequest(info.url, {
           responseType: "json"
         }).then(function(response) {
           const geojson = response.data;
-          const graphics = geojson.features.map(feature => {
-            return new Graphic({
+          geojson.features.forEach(feature => {
+            const graphic = new Graphic({
               geometry: {
                 type: "point",
                 longitude: feature.geometry.coordinates[0],
                 latitude: feature.geometry.coordinates[1]
               },
-              attributes: feature.properties
-            });
-          });
-
-          const layer = new FeatureLayer({
-            source: graphics,
-            title: info.name,
-            renderer: {
-              type: "simple",
               symbol: {
                 type: "simple-marker",
-                size: 1,
+                style: "circle",
                 color: [0, 0, 0, 0],
+                size: "40px",
                 outline: {
-                  width: 0,
-                  color: [0, 0, 0, 0]
+                  color: "red",
+                  width: "3px"
                 }
               }
-            },
-            labelingInfo: [{
-              symbol: {
-                type: "text",
-                color: "red",
-                font: {
-                  family: "Arial",
-                  size: 0
-                },
-                haloColor: "white",
-                haloSize: "1px"
-              },
-              labelPlacement: "center-center",
-              labelExpressionInfo: {
-                expression: "Text('●')"
-              },
-              maxScale: 0,
-              minScale: 0
-            }]
+            });
+            layer.add(graphic);
           });
-
-          pointLayers.push(layer);
-          return layer;
+        }).catch(function(error) {
+          console.error("Error loading Impact points:", error);
         });
+
+        pointLayers.push(layer);
+        return layer;
       } else {
         const layer = new GeoJSONLayer({
           url: info.url,
