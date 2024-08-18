@@ -116,6 +116,17 @@ document.addEventListener("DOMContentLoaded", function() {
             height: "15px"
           })
         }); 
+                            // render for impact points
+                                     } else if (info.name === "impactpoint") {
+                                // New renderer for impactpoint
+                                return new SimpleRenderer({
+                                  symbol: new SimpleMarkerSymbol({
+                                    color: colors[index],
+                                    size: 16,  // Increased size for impactpoint
+                                    outline: { color: "white", width: 2 }
+                                  })
+                                });    
+            
             // add additional renders above 
           } else {
             return new SimpleRenderer({
