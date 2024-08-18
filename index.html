@@ -106,6 +106,16 @@ document.addEventListener("DOMContentLoaded", function() {
                 height: "12px"
               })
             });
+
+} else if (info.name === "Fuel terminals") {
+        return new SimpleRenderer({
+          symbol: new PictureMarkerSymbol({
+            url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.png",
+            width: "12px",
+            height: "12px"
+          })
+        }); 
+            // add additional renders above 
           } else {
             return new SimpleRenderer({
               symbol: new SimpleMarkerSymbol({
