@@ -1,4 +1,5 @@
 let map, view;
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
@@ -112,17 +113,28 @@ document.addEventListener("DOMContentLoaded", function() {
               };
               break;
             case "HSZ Impact points":
-              // Use a SimpleMarkerSymbol for HSZ Impact points
               symbol = {
                 type: "simple-marker",
-                color: "#FF5733", // Example color
-                size: "15px", // Size of the marker
+                color: colors[index],
                 outline: {
-                  color: "white", // Outline color
+                  color: "white",
                   width: 1
                 }
               };
-              break;
+              return {
+                type: "simple",
+                symbol: symbol,
+                visualVariables: [
+                  {
+                    type: "size",
+                    field: "size", // Replace with actual field name from your GeoJSON
+                    minDataValue: 1,
+                    maxDataValue: 100, // Adjust based on your data range
+                    minSize: 1,
+                    maxSize: 100 // Adjust based on desired maximum size
+                  }
+                ]
+              };
             default:
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
               symbol = {
@@ -165,8 +177,19 @@ document.addEventListener("DOMContentLoaded", function() {
             }
           } : null,
           popupTemplate: info.name === "HSZ Impact points" ? {
-            title: "HSZ Impact points",
-            content: "Additional information: {your_field_name}" // Replace with actual field name
+            title: "HSZ Impact Point",
+            content: [
+              {
+                type: "fields",
+                fieldInfos: [
+                  {
+                    fieldName: "size",
+                    label: "Size"
+                  },
+                  // Add other fields you want to display in the popup
+                ]
+              }
+            ]
           } : null
         });
         return layer.load().then(() => {
