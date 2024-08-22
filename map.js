@@ -1,16 +1,15 @@
 let map, view;
-
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
-    "esri/renderers/UniqueValueRenderer",
+    "esri/renderers/SimpleRenderer",
     "esri/symbols/PictureMarkerSymbol",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, UniqueValueRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, Extent) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -69,45 +68,84 @@ document.addEventListener("DOMContentLoaded", function() {
               width: 1
             }
           };
-        } else if (name === "HSZ Impact points") {
-          return new UniqueValueRenderer({
-            field: "ObjectID",
-            defaultSymbol: new SimpleMarkerSymbol({
-              color: colors[index],
-              outline: {
-                color: "white",
-                width: 1
-              }
-            }),
-            uniqueValueInfos: []
-          });
         } else {
           let iconUrl;
+          let iconWidth = "20px";
+          let iconHeight = "20px";
+          let symbol;
+
           switch(name) {
             case "Seaports":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
               break;
             case "Fuel terminals":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: "30px",
+                height: "30px"
+              };
               break;
             case "Woolworths DCs":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
               break;
             case "CT sites":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
+              break;
+            case "HSZ Impact points":
+              // Use a SimpleMarkerSymbol for HSZ Impact points
+              symbol = {
+                type: "simple-marker",
+                color: "#FF5733", // Example color
+                size: "15px", // Size of the marker
+                outline: {
+                  color: "white", // Outline color
+                  width: 1
+                }
+              };
               break;
             default:
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
           }
 
           return {
             type: "simple",
-            symbol: {
-              type: "picture-marker",
-              url: iconUrl,
-              width: "20px",
-              height: "20px"
-            }
+            symbol: symbol,
+            visualVariables: [
+              {
+                type: "size",
+                field: "ObjectID",
+                stops: [
+                  { value: 1, size: 15 },
+                  { value: 1000, size: 25 }
+                ]
+              }
+            ]
           };
         }
       }
@@ -126,35 +164,11 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
-          popupTemplate: {
-            title: "{name}",
-            content: "{*}"
-          }
+          popupTemplate: info.name === "HSZ Impact points" ? {
+            title: "HSZ Impact points",
+            content: "Additional information: {your_field_name}" // Replace with actual field name
+          } : null
         });
-
-        if (info.name === "HSZ Impact points") {
-          layer.when(() => {
-            layer.queryFeatures().then(function(results) {
-              const renderer = layer.renderer;
-              results.features.forEach(function(feature) {
-                const size = feature.attributes.size || 10; // Default size if not specified
-                renderer.uniqueValueInfos.push({
-                  value: feature.attributes.ObjectID,
-                  symbol: new SimpleMarkerSymbol({
-                    color: colors[index],
-                    size: size,
-                    outline: {
-                      color: "white",
-                      width: 1
-                    }
-                  })
-                });
-              });
-              layer.renderer = renderer;
-            });
-          });
-        }
-
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
@@ -181,6 +195,11 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error("Error in Promise.all:", error);
         if (error.details) console.error("Error details:", error.details);
       });
+
+      setTimeout(() => {
+        console.log("Layers in map:", map.layers.items.map(l => l.title));
+        console.log("Current map scale:", view.scale);
+      }, 5000);
     }
 
     function addLayersInOrder() {
