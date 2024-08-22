@@ -94,114 +94,100 @@
 
         var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
 
-        function createRenderer(geometryType, info, index) {
-          console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
-          switch(geometryType) {
-            case "point":
-            case "multipoint":
-              if (info.name === "Seaports") {
-                return {
-                  type: "simple",
-                  symbol: {
-                    type: "picture-marker",
-                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
-                    width: "12px",
-                    height: "12px",
-                    xoffset: 5,
-                    yoffset: 5
-                  }
-                };
-              } else if (info.name === "Fuel terminals") {
-                return {
-                  type: "simple",
-                  symbol: {
-                    type: "picture-marker",
-                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
-                    width: "12px",
-                    height: "15px",
-                    xoffset: -5,
-                    yoffset: -5
-                  }
-                };
-              } else if (info.name === "Woolworths DCs") {
-                return {
-                  type: "simple",
-                  symbol: {
-                    type: "picture-marker",
-                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png",
-                    width: "15px",
-                    height: "15px",
-                    xoffset: 5,
-                    yoffset: -5
-                  }
-                };
-              } else if (info.name === "CT sites") {
-                return {
-                  type: "simple",
-                  symbol: {
-                    type: "picture-marker",
-                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Railicon.png",
-                    width: "15px",
-                    height: "15px",
-                    xoffset: -5,
-                    yoffset: 5
-                  }
-                };
-              } else {
-                return {
-                  type: "simple",
-                  symbol: {
-                    type: "simple-marker",
-                    color: colors[index],
-                    size: 8,
-                    outline: { color: "white", width: 1 }
-                  }
-                };
+        function createRenderer(name, index) {
+          console.log(`Creating renderer for ${name}`);
+          if (name === "Rail") {
+            return {
+              type: "simple",
+              symbol: {
+                type: "simple-line",
+                color: colors[index],
+                width: 1
               }
-            case "polyline":
-              return {
-                type: "simple",
-                symbol: {
-                  type: "simple-line",
-                  color: colors[index],
-                  width: 1
-                }
-              };
-            default:
-              console.error(`Unsupported geometry type: ${geometryType}`);
-              return null;
+            };
+          } else if (name === "Seaports") {
+            return {
+              type: "simple",
+              symbol: {
+                type: "picture-marker",
+                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
+                width: "12px",
+                height: "12px",
+                xoffset: 5,
+                yoffset: 5
+              }
+            };
+          } else if (name === "Fuel terminals") {
+            return {
+              type: "simple",
+              symbol: {
+                type: "picture-marker",
+                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
+                width: "12px",
+                height: "15px",
+                xoffset: -5,
+                yoffset: -5
+              }
+            };
+          } else if (name === "Woolworths DCs") {
+            return {
+              type: "simple",
+              symbol: {
+                type: "picture-marker",
+                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png",
+                width: "15px",
+                height: "15px",
+                xoffset: 5,
+                yoffset: -5
+              }
+            };
+          } else if (name === "CT sites") {
+            return {
+              type: "simple",
+              symbol: {
+                type: "picture-marker",
+                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Railicon.png",
+                width: "15px",
+                height: "15px",
+                xoffset: -5,
+                yoffset: 5
+              }
+            };
+          } else {
+            return {
+              type: "simple",
+              symbol: {
+                type: "simple-marker",
+                color: colors[index],
+                size: 8,
+                outline: { color: "white", width: 1 }
+              }
+            };
           }
         }
 
-        let lineLayers = [];
-        let pointLayers = [];
+        let layers = [];
 
         Promise.all(layerInfo.map((info, index) => {
           console.log(`Creating layer for ${info.name}`);
           const layer = new GeoJSONLayer({
             url: info.url,
             title: info.name,
-            renderer: createRenderer(info.geometryType, info, index),
-            featureReduction: {
+            renderer: createRenderer(info.name, index),
+            featureReduction: info.name !== "Rail" ? {
               type: "cluster",
               clusterRadius: "100px",
               popupTemplate: {
                 title: "Cluster of {cluster_count} points",
                 content: "Zoom in to see individual points."
               }
-            },
-            minScale: 1000000 // Adjust as needed
+            } : null,
+            minScale: info.name !== "Rail" ? 1000000 : undefined // Adjust as needed
           });
 
           return layer.load().then(() => {
             console.log(`Layer ${info.name} loaded`);
-            console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
-
-            if (layer.geometryType === "polyline") {
-              lineLayers.push(layer);
-            } else {
-              pointLayers.push(layer);
-            }
+            layers.push(layer);
 
             const button = document.createElement("button");
             button.innerHTML = info.name;
@@ -216,10 +202,8 @@
 
             return layer;
           });
-        })).then((layers) => {
-          // Add line layers first, then point layers
-          map.addMany(lineLayers);
-          map.addMany(pointLayers);
+        })).then(() => {
+          map.addMany(layers);
           console.log("All layers added to map");
         }).catch(error => {
           console.error("Error loading layers:", error);
