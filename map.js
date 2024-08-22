@@ -81,7 +81,17 @@ document.addEventListener("DOMContentLoaded", function() {
               url: iconUrl,
               width: "20px",
               height: "20px"
-            }
+            },
+            visualVariables: [
+              {
+                type: "size",
+                field: "ObjectID", // You might want to change this to a more appropriate field
+                minDataValue: 1,
+                maxDataValue: 1000,
+                minSize: 15,
+                maxSize: 25
+              }
+            ]
           };
         }
       }
@@ -99,6 +109,7 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
+          minScale: info.name !== "Rail" ? 10000000 : 0 // Add this line back
         });
         return layer.load().then(() => {
           layersByName[info.name] = layer;
