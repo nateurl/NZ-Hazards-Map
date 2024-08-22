@@ -1,4 +1,5 @@
 let map, view;
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
@@ -7,10 +8,9 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/layers/GeoJSONLayer",
     "esri/renderers/SimpleRenderer",
     "esri/symbols/PictureMarkerSymbol",
-    "esri/symbols/SimpleMarkerSymbol",
     "esri/symbols/SimpleFillSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleFillSymbol, Extent) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -82,18 +82,12 @@ document.addEventListener("DOMContentLoaded", function() {
           };
         } else {
           let iconUrl;
-          let iconWidth = "20px";
-          let iconHeight = "20px";
-          let symbol;
-
           switch(name) {
             case "Seaports":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
               break;
             case "Fuel terminals":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
-              iconWidth = "30px";
-              iconHeight = "30px";
               break;
             case "Woolworths DCs":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
@@ -105,16 +99,24 @@ document.addEventListener("DOMContentLoaded", function() {
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
           }
 
-          symbol = {
-            type: "picture-marker",
-            url: iconUrl,
-            width: iconWidth,
-            height: iconHeight
-          };
-
           return {
             type: "simple",
-            symbol: symbol
+            symbol: {
+              type: "picture-marker",
+              url: iconUrl,
+              width: "20px",
+              height: "20px"
+            },
+            visualVariables: [
+              {
+                type: "size",
+                field: "ObjectID",
+                stops: [
+                  { value: 1, size: 15 },
+                  { value: 1000, size: 25 }
+                ]
+              }
+            ]
           };
         }
       }
@@ -133,19 +135,6 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
-          popupTemplate: {
-            title: "{name}",
-            content: [{
-              type: "fields",
-              fieldInfos: [{
-                fieldName: "name",
-                label: "Name"
-              }, {
-                fieldName: "description",
-                label: "Description"
-              }]
-            }]
-          }
         });
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
