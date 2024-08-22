@@ -30,17 +30,11 @@
   </footer>
   <script src="https://js.arcgis.com/4.30/"></script>
   <script src="config.js"></script>
+  <script src="map.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       console.log("DOM fully loaded and parsed");
-      require([
-        "esri/Map",
-        "esri/views/MapView",
-        "esri/layers/GeoJSONLayer",
-        "esri/renderers/UniqueValueRenderer",
-        "esri/symbols/PictureMarkerSymbol",
-        "esri/geometry/Extent"
-      ], function(Map, MapView, GeoJSONLayer, UniqueValueRenderer, PictureMarkerSymbol, Extent) {
+// removed content
         console.log("Modules loaded");
 
         var map = new Map({
@@ -115,17 +109,27 @@
             }
           });
 
-          return clusters.map(cluster => ({
-            type: "Feature",
-            geometry: {
-              type: "Point",
-              coordinates: cluster.center
-            },
-            properties: {
-              cluster_id: cluster.id,
-              point_count: cluster.features.length
+          return clusters.flatMap(cluster => {
+            if (cluster.features.length === 1) {
+              const feature = cluster.features[0];
+              feature.attributes.cluster_id = cluster.id;
+              feature.attributes.point_count = 1;
+              return [feature];
+            } else {
+              const clusterFeature = {
+                geometry: {
+                  type: "point",
+                  longitude: cluster.center[0],
+                  latitude: cluster.center[1]
+                },
+                attributes: {
+                  cluster_id: cluster.id,
+                  point_count: cluster.features.length
+                }
+              };
+              return [clusterFeature];
             }
-          }));
+          });
         }
 
         function createRenderer(name, index) {
@@ -159,13 +163,15 @@
             }
 
             return {
-              type: "simple",
-              symbol: {
+              type: "unique-value",
+              field: "cluster_id",
+              defaultSymbol: {
                 type: "picture-marker",
                 url: iconUrl,
                 width: "20px",
                 height: "20px"
               },
+              uniqueValueInfos: [],
               visualVariables: [
                 {
                   type: "size",
@@ -185,46 +191,41 @@
 
         Promise.all(layerInfo.map((info, index) => {
           console.log(`Creating layer for ${info.name}`);
-          return fetch(info.url)
-            .then(response => response.json())
-            .then(data => {
-              let layer;
-              if (info.name !== "Rail") {
-                const clusteredFeatures = clusterFeatures(data.features, 0.1);
-                const clusteredGeoJSON = {
-                  type: "FeatureCollection",
-                  features: clusteredFeatures
-                };
-                const blob = new Blob([JSON.stringify(clusteredGeoJSON)], {type: "application/json"});
-                const url = URL.createObjectURL(blob);
-                layer = new GeoJSONLayer({
-                  url: url,
-                  title: info.name,
-                  renderer: createRenderer(info.name, index),
-                  minScale: 10000000
-                });
-              } else {
-                layer = new GeoJSONLayer({
-                  url: info.url,
-                  title: info.name,
-                  renderer: createRenderer(info.name, index)
-                });
-              }
+          const layer = new GeoJSONLayer({
+            url: info.url,
+            title: info.name,
+            renderer: createRenderer(info.name, index),
+            featureReduction: null,
+            minScale: info.name !== "Rail" ? 10000000 : undefined
+          });
 
-              layers.push(layer);
+          return layer.load().then(() => {
+            console.log(`Layer ${info.name} loaded successfully`);
+            
+            if (info.name !== "Rail") {
+              layer.queryFeatures().then(result => {
+                const features = result.features;
+                const clusteredFeatures = clusterFeatures(features, 0.1); // Adjust the distance threshold as needed
+                layer.source.addFeatures(clusteredFeatures);
+              });
+            }
 
-              const button = document.createElement("button");
-              button.innerHTML = info.name;
-              button.className = "layerButton active";
-              button.onclick = function() {
-                layer.visible = !layer.visible;
-                this.classList.toggle("active");
-                console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-              };
-              document.getElementById("layerButtons").appendChild(button);
+            layers.push(layer);
 
-              return layer;
-            });
+            const button = document.createElement("button");
+            button.innerHTML = info.name;
+            button.className = "layerButton active";
+            button.onclick = function() {
+              layer.visible = !layer.visible;
+              this.classList.toggle("active");
+              console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+            };
+            document.getElementById("layerButtons").appendChild(button);
+
+            return layer;
+          }).catch(error => {
+            console.error(`Error loading layer ${info.name}:`, error);
+          });
         })).then(() => {
           map.addMany(layers);
           console.log("All layers added to map");
