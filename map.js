@@ -118,6 +118,7 @@ document.addEventListener("DOMContentLoaded", function() {
           featureReduction: info.name !== "Rail" ? {
             type: "cluster",
             clusterRadius: "100px",
+            clusterMaxZoom: 14,
             popupTemplate: {
               title: "Cluster of {cluster_count} points",
               content: "Zoom in to see individual points."
@@ -125,27 +126,6 @@ document.addEventListener("DOMContentLoaded", function() {
           } : null,
           minScale: info.name !== "Rail" ? 10000000 : undefined
         });
-
-
-
-        
-        const layer = new GeoJSONLayer({
-  url: info.url,
-  title: info.name,
-  featureReduction: {
-    type: "cluster",
-    clusterRadius: "50px",
-    clusterMaxZoom: 14,
-    popupTemplate: {
-      title: "Cluster of {cluster_count} points",
-      content: "Zoom in to see individual points."
-    }
-  }
-});
-
-
-        
-
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
           layers.push(layer);
