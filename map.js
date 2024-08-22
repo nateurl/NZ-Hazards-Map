@@ -60,13 +60,13 @@ document.addEventListener("DOMContentLoaded", function() {
     function initializeLayers() {
       function createRenderer(name, index) {
         console.log(`Creating renderer for ${name}`);
-        if (name === "Rail") {
+        if (name === "Rail" || name === "State highways") {
           return {
             type: "simple",
             symbol: {
               type: "simple-line",
-              color: colors[index],
-              width: 1
+              color: name === "Rail" ? colors[index] : "#FFD700", // Gold color for highways
+              width: name === "Rail" ? 1 : 2 // Slightly thicker for highways
             }
           };
         } else if (name === "HSZ Impact points") {
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" ? {
+          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" && info.name !== "State highways" ? {
             type: "cluster",
             clusterRadius: "100px",
             popupTemplate: {
@@ -140,9 +140,9 @@ document.addEventListener("DOMContentLoaded", function() {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
-          if (info.name === "HSZ Impact points") {
+          if (info.name === "HSZ Impact points" || info.name === "State highways") {
             const button = document.createElement("button");
-            button.innerHTML = "Toggle HSZ Impact Points";
+            button.innerHTML = `Toggle ${info.name}`;
             button.className = "layerButton";
             button.onclick = function() {
               layer.visible = !layer.visible;
@@ -172,12 +172,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addLayersInOrder() {
-      const orderOfLayers = ["Rail", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points"];
+      const orderOfLayers = ["Rail", "State highways", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points"];
       
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
           map.add(layersByName[layerName]);
-          if (layerName === "HSZ Impact points") {
+          if (layerName === "HSZ Impact points" || layerName === "State highways") {
             layersByName[layerName].visible = false;
           }
           console.log(`Added ${layerName} to map`);
