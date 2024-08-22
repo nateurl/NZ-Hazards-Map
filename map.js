@@ -1,4 +1,4 @@
-function initmap() {
+function initMap() {
   require([
         "esri/Map",
         "esri/views/MapView",
@@ -7,4 +7,6 @@ function initmap() {
         "esri/symbols/PictureMarkerSymbol",
         "esri/geometry/Extent"
       ], function(Map, MapView, GeoJSONLayer, UniqueValueRenderer, PictureMarkerSymbol, Extent) {
+  });
+  }
     document.addEventListener("DOMContentLoaded", initMap);
