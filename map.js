@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 field: "ObjectID",
                 stops: [
                   { value: 1, size: name === "Fuel terminals" ? 35 : 15 },
-                  { value: 1000, size: name === "Fuel terminals ? 45 : 25 }
+                  { value: 1000, size: name === "Fuel terminals" ? 45 : 25 }
                 ]
               }
             ]
