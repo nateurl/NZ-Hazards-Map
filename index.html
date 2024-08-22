@@ -30,10 +30,17 @@
   </footer>
   <script src="https://js.arcgis.com/4.30/"></script>
   <script src="config.js"></script>
-  <script src="map.js"></script>
   <script>
+    document.addEventListener("DOMContentLoaded", function() {
       console.log("DOM fully loaded and parsed");
-// removed content
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/GeoJSONLayer",
+        "esri/renderers/SimpleRenderer",
+        "esri/symbols/PictureMarkerSymbol",
+        "esri/geometry/Extent"
+      ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
         console.log("Modules loaded");
 
         var map = new Map({
@@ -73,64 +80,6 @@
           console.error("Error loading map view:", error);
         });
 
-        function distance(point1, point2) {
-          const dx = point1[0] - point2[0];
-          const dy = point1[1] - point2[1];
-          return Math.sqrt(dx * dx + dy * dy);
-        }
-
-        function clusterFeatures(features, distanceThreshold) {
-          let clusters = [];
-          let clusterId = 0;
-
-          features.forEach(feature => {
-            const point = feature.geometry;
-            let assigned = false;
-
-            for (let cluster of clusters) {
-              if (distance(cluster.center, [point.longitude, point.latitude]) < distanceThreshold) {
-                cluster.features.push(feature);
-                cluster.center = [
-                  (cluster.center[0] * cluster.features.length + point.longitude) / (cluster.features.length + 1),
-                  (cluster.center[1] * cluster.features.length + point.latitude) / (cluster.features.length + 1)
-                ];
-                assigned = true;
-                break;
-              }
-            }
-
-            if (!assigned) {
-              clusters.push({
-                id: clusterId++,
-                center: [point.longitude, point.latitude],
-                features: [feature]
-              });
-            }
-          });
-
-          return clusters.flatMap(cluster => {
-            if (cluster.features.length === 1) {
-              const feature = cluster.features[0];
-              feature.attributes.cluster_id = cluster.id;
-              feature.attributes.point_count = 1;
-              return [feature];
-            } else {
-              const clusterFeature = {
-                geometry: {
-                  type: "point",
-                  longitude: cluster.center[0],
-                  latitude: cluster.center[1]
-                },
-                attributes: {
-                  cluster_id: cluster.id,
-                  point_count: cluster.features.length
-                }
-              };
-              return [clusterFeature];
-            }
-          });
-        }
-
         function createRenderer(name, index) {
           console.log(`Creating renderer for ${name}`);
           if (name === "Rail") {
@@ -162,23 +111,20 @@
             }
 
             return {
-              type: "unique-value",
-              field: "cluster_id",
-              defaultSymbol: {
+              type: "simple",
+              symbol: {
                 type: "picture-marker",
                 url: iconUrl,
                 width: "20px",
                 height: "20px"
               },
-              uniqueValueInfos: [],
               visualVariables: [
                 {
                   type: "size",
-                  field: "point_count",
+                  field: "ObjectID",  // You may need to change this to a field that exists in your data
                   stops: [
-                    { value: 1, size: 20 },
-                    { value: 5, size: 30 },
-                    { value: 10, size: 40 }
+                    { value: 1, size: 15 },
+                    { value: 1000, size: 25 }  // Adjust these values as needed
                   ]
                 }
               ]
@@ -194,21 +140,19 @@
             url: info.url,
             title: info.name,
             renderer: createRenderer(info.name, index),
-            featureReduction: null,
+            featureReduction: info.name !== "Rail" ? {
+              type: "cluster",
+              clusterRadius: "100px",
+              popupTemplate: {
+                title: "Cluster of {cluster_count} points",
+                content: "Zoom in to see individual points."
+              }
+            } : null,
             minScale: info.name !== "Rail" ? 10000000 : undefined
           });
 
           return layer.load().then(() => {
             console.log(`Layer ${info.name} loaded successfully`);
-            
-            if (info.name !== "Rail") {
-              layer.queryFeatures().then(result => {
-                const features = result.features;
-                const clusteredFeatures = clusterFeatures(features, 0.1); // Adjust the distance threshold as needed
-                layer.source.addFeatures(clusteredFeatures);
-              });
-            }
-
             layers.push(layer);
 
             const button = document.createElement("button");
