@@ -59,66 +59,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function initializeLayers() {
       function createRenderer(name, index) {
-        console.log(`Creating renderer for ${name}`);
-        if (name === "Rail") {
-          return {
-            type: "simple",
-            symbol: {
-              type: "simple-line",
-              color: colors[index],
-              width: 1
-            }
-          };
-        } else if (name === "HSZ Impact points") {
-          return {
-            type: "simple",
-            symbol: new SimpleFillSymbol({
-              color: [255, 87, 51, 0.5], // Semi-transparent orange
-              outline: {
-                color: [255, 87, 51, 1], // Solid orange
-                width: 1
-              }
-            })
-          };
-        } else {
-          let iconUrl;
-          switch(name) {
-            case "Seaports":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
-              break;
-            case "Fuel terminals":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
-              break;
-            case "Woolworths DCs":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
-              break;
-            case "CT sites":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png";
-              break;
-            default:
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
-          }
-
-          return {
-            type: "simple",
-            symbol: {
-              type: "picture-marker",
-              url: iconUrl,
-              width: "20px",
-              height: "20px"
-            },
-            visualVariables: [
-              {
-                type: "size",
-                field: "ObjectID",
-                stops: [
-                  { value: 1, size: 15 },
-                  { value: 1000, size: 25 }
-                ]
-              }
-            ]
-          };
-        }
+        // ... (keep this function as it was)
       }
 
       Promise.all(layerInfo.map((info, index) => {
@@ -140,15 +81,18 @@ document.addEventListener("DOMContentLoaded", function() {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
-          const button = document.createElement("button");
-          button.innerHTML = info.name;
-          button.className = "layerButton active";
-          button.onclick = function() {
-            layer.visible = !layer.visible;
-            this.classList.toggle("active");
-            console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-          };
-          document.getElementById("layerButtons").appendChild(button);
+          // Create button only for HSZ Impact points layer
+          if (info.name === "HSZ Impact points") {
+            const button = document.createElement("button");
+            button.innerHTML = "Toggle HSZ Impact Points";
+            button.className = "layerButton";
+            button.onclick = function() {
+              layer.visible = !layer.visible;
+              this.classList.toggle("active");
+              console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+            };
+            document.getElementById("layerButtons").appendChild(button);
+          }
 
           return layer;
         }).catch(error => {
@@ -175,6 +119,10 @@ document.addEventListener("DOMContentLoaded", function() {
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
           map.add(layersByName[layerName]);
+          // Set HSZ Impact points layer to initially invisible
+          if (layerName === "HSZ Impact points") {
+            layersByName[layerName].visible = false;
+          }
           console.log(`Added ${layerName} to map`);
         } else {
           console.warn(`Layer ${layerName} not found`);
