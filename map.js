@@ -6,11 +6,11 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
-    "esri/renderers/SimpleRenderer",
+    "esri/renderers/UniqueValueRenderer",
     "esri/symbols/PictureMarkerSymbol",
     "esri/symbols/SimpleMarkerSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, UniqueValueRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, Extent) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -70,25 +70,17 @@ document.addEventListener("DOMContentLoaded", function() {
             }
           };
         } else if (name === "HSZ Impact points") {
-          return {
-            type: "simple",
-            symbol: {
-              type: "simple-marker",
+          return new UniqueValueRenderer({
+            field: "ObjectID",
+            defaultSymbol: new SimpleMarkerSymbol({
               color: colors[index],
               outline: {
                 color: "white",
                 width: 1
               }
-            },
-            visualVariables: [{
-              type: "size",
-              field: "size", // Make sure this matches the field name in your GeoJSON
-              minDataValue: 1,
-              maxDataValue: 10, // Adjust based on your data
-              minSize: 5,
-              maxSize: 40 // Adjust based on your preferences
-            }]
-          };
+            }),
+            uniqueValueInfos: []
+          });
         } else {
           let iconUrl;
           switch(name) {
@@ -136,20 +128,33 @@ document.addEventListener("DOMContentLoaded", function() {
           } : null,
           popupTemplate: {
             title: "{name}",
-            content: [
-              {
-                type: "fields",
-                fieldInfos: [
-                  {
-                    fieldName: "size",
-                    label: "Size"
-                  },
-                  // Add other fields you want to display in the popup
-                ]
-              }
-            ]
+            content: "{*}"
           }
         });
+
+        if (info.name === "HSZ Impact points") {
+          layer.when(() => {
+            layer.queryFeatures().then(function(results) {
+              const renderer = layer.renderer;
+              results.features.forEach(function(feature) {
+                const size = feature.attributes.size || 10; // Default size if not specified
+                renderer.uniqueValueInfos.push({
+                  value: feature.attributes.ObjectID,
+                  symbol: new SimpleMarkerSymbol({
+                    color: colors[index],
+                    size: size,
+                    outline: {
+                      color: "white",
+                      width: 1
+                    }
+                  })
+                });
+              });
+              layer.renderer = renderer;
+            });
+          });
+        }
+
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
