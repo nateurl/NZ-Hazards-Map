@@ -1,3 +1,5 @@
+let map, view;
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
@@ -67,6 +69,15 @@ document.addEventListener("DOMContentLoaded", function() {
               width: 1
             }
           };
+        } else if (name === "State highways") {
+          return {
+            type: "simple",
+            symbol: {
+              type: "simple-line",
+              color: "#FFD700", // Gold color for highways
+              width: 2 // Slightly thicker for highways
+            }
+          };
         } else if (name === "HSZ Impact points") {
           return {
             type: "simple",
@@ -125,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" ? {
+          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" && info.name !== "State highways" ? {
             type: "cluster",
             clusterRadius: "100px",
             popupTemplate: {
@@ -138,15 +149,17 @@ document.addEventListener("DOMContentLoaded", function() {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
-          const button = document.createElement("button");
-          button.innerHTML = info.name;
-          button.className = "layerButton active";
-          button.onclick = function() {
-            layer.visible = !layer.visible;
-            this.classList.toggle("active");
-            console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-          };
-          document.getElementById("layerButtons").appendChild(button);
+          if (info.name === "HSZ Impact points" || info.name === "State highways") {
+            const button = document.createElement("button");
+            button.innerHTML = `Toggle ${info.name}`;
+            button.className = "layerButton";
+            button.onclick = function() {
+              layer.visible = !layer.visible;
+              this.classList.toggle("active");
+              console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+            };
+            document.getElementById("layerButtons").appendChild(button);
+          }
 
           return layer;
         }).catch(error => {
@@ -168,11 +181,14 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addLayersInOrder() {
-      const orderOfLayers = ["Rail", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points"];
+      const orderOfLayers = ["Rail", "State highways", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points"];
       
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
           map.add(layersByName[layerName]);
+          if (layerName === "HSZ Impact points" || layerName === "State highways") {
+            layersByName[layerName].visible = false;
+          }
           console.log(`Added ${layerName} to map`);
         } else {
           console.warn(`Layer ${layerName} not found`);
