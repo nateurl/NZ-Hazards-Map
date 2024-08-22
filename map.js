@@ -1,19 +1,5 @@
 let map, view;
 
-// Layer information with scale and offset properties
-var layerInfo = [
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail", offset: 0, minScale: 0, maxScale: 0 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs", minScale: 5000000, maxScale: 0 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports", minScale: 7000000, maxScale: 1000000 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports", minScale: 8000000, maxScale: 2000000 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports", minScale: 6000000, maxScale: 500000 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites", minScale: 5500000, maxScale: 750000 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals", minScale: 7500000, maxScale: 1500000 },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points", minScale: 9000000, maxScale: 3000000 },
-];
-
-var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
-
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
@@ -68,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log("New scale:", newValue);
     });
 
-    function createRenderer(name, index, offset) {
+    function createRenderer(name, index) {
       console.log(`Creating renderer for ${name}`);
       if (name === "Rail") {
         return {
@@ -77,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
             type: "simple-line",
             color: colors[index],
             width: 1,
-            offset: offset || index * 2
+            offset: 2  // Added offset for Rail layer
           }
         };
       } else {
@@ -129,18 +115,16 @@ document.addEventListener("DOMContentLoaded", function() {
         const layer = new GeoJSONLayer({
           url: info.url,
           title: info.name,
-          renderer: createRenderer(info.name, index, info.offset),
+          renderer: createRenderer(info.name, index),
           featureReduction: info.name !== "Rail" ? {
             type: "cluster",
             clusterRadius: "100px",
-            clusterMaxZoom: 14,
             popupTemplate: {
               title: "Cluster of {cluster_count} points",
               content: "Zoom in to see individual points."
             }
           } : null,
-          minScale: info.minScale || (info.name !== "Rail" ? 10000000 : undefined),
-          maxScale: info.maxScale || 0
+          minScale: info.name !== "Rail" ? 10000000 : undefined
         });
 
         return layer.load().then(() => {
