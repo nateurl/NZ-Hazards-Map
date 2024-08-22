@@ -12,12 +12,12 @@ document.addEventListener("DOMContentLoaded", function() {
       ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
         console.log("Modules loaded");
 
-        var map = new Map({
+      map = new Map({
           basemap: "streets-vector"
         });
         console.log("Map created");
 
-        var view = new MapView({
+      view = new MapView({
           container: "viewDiv",
           map: map,
           extent: new Extent({
