@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("Modules loaded");
 
     map = new Map({
-      basemap: "gray-vector"
+      basemap: "dark-gray-vector"
     });
     console.log("Map created");
 
