@@ -111,8 +111,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 height: iconHeight
               };
               break;
-            case "HSZ Impact Points":
-              // Use a SimpleMarkerSymbol for HSZ Impact Points
+            case "HSZ Impact points":
+              // Use a SimpleMarkerSymbol for HSZ Impact points
               symbol = {
                 type: "simple-marker",
                 color: "#FF5733", // Example color
@@ -156,7 +156,7 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact Points" ? {
+          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" ? {
             type: "cluster",
             clusterRadius: "100px",
             popupTemplate: {
@@ -164,8 +164,8 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
-          popupTemplate: info.name === "HSZ Impact Points" ? {
-            title: "HSZ Impact Point",
+          popupTemplate: info.name === "HSZ Impact points" ? {
+            title: "HSZ Impact points",
             content: "Additional information: {your_field_name}" // Replace with actual field name
           } : null
         });
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addLayersInOrder() {
-      const orderOfLayers = ["Rail", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact Points"];
+      const orderOfLayers = ["Rail", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points"];
       
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
