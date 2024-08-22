@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    <h1> NB Logistics</h1>
+    <h1>NB Logistics</h1>
     <nav>
       <ul>
         <li><a href="#">Home</a></li>
@@ -18,194 +18,219 @@
       </ul>
     </nav>
   </header>
-<main>
-  <div id="layerControls">
-    <h3>Layers</h3>
-    <div id="layerButtons"></div>
-  </div>
-  <div id="viewDiv"></div>
-</main>
+  <main>
+    <div id="layerControls">
+      <h3>Layers</h3>
+      <div id="layerButtons"></div>
+    </div>
+    <div id="viewDiv"></div>
+  </main>
   <footer>
     <p>&copy; 2024 Aa Logistics. All rights reserved.</p>
   </footer>
   <script src="https://js.arcgis.com/4.30/"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("DOM fully loaded and parsed");
-  require([
-    "esri/Map",
-    "esri/views/MapView",
-    "esri/layers/GeoJSONLayer",
-    "esri/renderers/SimpleRenderer",
-    "esri/symbols/SimpleMarkerSymbol",
-    "esri/symbols/SimpleLineSymbol",
-    "esri/symbols/PictureMarkerSymbol",
-    "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
-    console.log("Modules loaded");
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      console.log("DOM fully loaded and parsed");
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/layers/GeoJSONLayer",
+        "esri/renderers/SimpleRenderer",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/PictureMarkerSymbol",
+        "esri/geometry/Extent"
+      ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, SimpleMarkerSymbol, SimpleLineSymbol, PictureMarkerSymbol, Extent) {
+        console.log("Modules loaded");
 
-    var map = new Map({
-      basemap: "streets-vector"
-    });
-    console.log("Map created");
+        var map = new Map({
+          basemap: "streets-vector"
+        });
+        console.log("Map created");
 
-    var view = new MapView({
-      container: "viewDiv",
-      map: map,
-      extent: new Extent({
-        xmin: 165.0,
-        ymin: -48.0,
-        xmax: 179.5,
-        ymax: -33.5,
-        spatialReference: { wkid: 4326 }
-      }),
-      constraints: {
-        minZoom: 4,
-        maxZoom: 18,
-        rotationEnabled: false,
-        geometry: new Extent({
-          xmin: 165.0,
-          ymin: -48.0,
-          xmax: 179.5,
-          ymax: -33.5,
-          spatialReference: { wkid: 4326 }
-        })
-      }
-    });
-    console.log("View created");
-
-    view.when(() => {
-      console.log("Map view is ready");
-      view.ui.add("layerControls", "bottom-right");
-    }, (error) => {
-      console.error("Error loading map view:", error);
-    });
-
-    var layerInfo = [
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" },
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" },
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports" },
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites" }, 
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals" },
-      { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points" },
-    ];
-
-    var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"]
-
-    function createRenderer(geometryType, info, index) {
-      console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
-      switch(geometryType) {
-        case "point":
-        case "multipoint":
-          if (info.name === "Seaports") {
-            return new SimpleRenderer({
-              symbol: new PictureMarkerSymbol({
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
-                width: "12px",
-                height: "12px"
-              })
-            });
-          } else if (info.name === "Fuel terminals") {
-            return new SimpleRenderer({
-              symbol: new PictureMarkerSymbol({
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
-                width: "12px",
-                height: "15px"
-              })
-            }); 
-          } else if (info.name === "Woolworths DCs") {
-            return new SimpleRenderer({
-              symbol: new PictureMarkerSymbol({
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png",
-                width: "15px",
-                height: "15px"
-              })
-            });
-          } else if (info.name === "CT sites") {
-            return new SimpleRenderer({
-              symbol: new PictureMarkerSymbol({
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png",
-                width: "15px",
-                height: "15px"
-              })
-            });
-          } else {
-            return new SimpleRenderer({
-              symbol: new SimpleMarkerSymbol({
-                color: colors[index],
-                size: 8,
-                outline: { color: "white", width: 1 }
-              })
-            });
-          }
-        case "polyline":
-          return new SimpleRenderer({
-            symbol: new SimpleLineSymbol({
-              color: colors[index],
-              width: 1
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          extent: new Extent({
+            xmin: 165.0,
+            ymin: -48.0,
+            xmax: 179.5,
+            ymax: -33.5,
+            spatialReference: { wkid: 4326 }
+          }),
+          constraints: {
+            minZoom: 4,
+            maxZoom: 18,
+            rotationEnabled: false,
+            geometry: new Extent({
+              xmin: 165.0,
+              ymin: -48.0,
+              xmax: 179.5,
+              ymax: -33.5,
+              spatialReference: { wkid: 4326 }
             })
+          }
+        });
+        console.log("View created");
+
+        view.when(() => {
+          console.log("Map view is ready");
+          view.ui.add("layerControls", "bottom-right");
+        }, (error) => {
+          console.error("Error loading map view:", error);
+        });
+
+        var layerInfo = [
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points" },
+        ];
+
+        var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+
+        function createRenderer(geometryType, info, index) {
+          console.log(`Creating renderer for ${info.name}, geometry type: ${geometryType}`);
+          switch(geometryType) {
+            case "point":
+            case "multipoint":
+              if (info.name === "Seaports") {
+                return {
+                  type: "simple",
+                  symbol: {
+                    type: "picture-marker",
+                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
+                    width: "12px",
+                    height: "12px",
+                    xoffset: 5,
+                    yoffset: 5
+                  }
+                };
+              } else if (info.name === "Fuel terminals") {
+                return {
+                  type: "simple",
+                  symbol: {
+                    type: "picture-marker",
+                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
+                    width: "12px",
+                    height: "15px",
+                    xoffset: -5,
+                    yoffset: -5
+                  }
+                };
+              } else if (info.name === "Woolworths DCs") {
+                return {
+                  type: "simple",
+                  symbol: {
+                    type: "picture-marker",
+                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png",
+                    width: "15px",
+                    height: "15px",
+                    xoffset: 5,
+                    yoffset: -5
+                  }
+                };
+              } else if (info.name === "CT sites") {
+                return {
+                  type: "simple",
+                  symbol: {
+                    type: "picture-marker",
+                    url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Railicon.png",
+                    width: "15px",
+                    height: "15px",
+                    xoffset: -5,
+                    yoffset: 5
+                  }
+                };
+              } else {
+                return {
+                  type: "simple",
+                  symbol: {
+                    type: "simple-marker",
+                    color: colors[index],
+                    size: 8,
+                    outline: { color: "white", width: 1 }
+                  }
+                };
+              }
+            case "polyline":
+              return {
+                type: "simple",
+                symbol: {
+                  type: "simple-line",
+                  color: colors[index],
+                  width: 1
+                }
+              };
+            default:
+              console.error(`Unsupported geometry type: ${geometryType}`);
+              return null;
+          }
+        }
+
+        let lineLayers = [];
+        let pointLayers = [];
+
+        Promise.all(layerInfo.map((info, index) => {
+          console.log(`Creating layer for ${info.name}`);
+          const layer = new GeoJSONLayer({
+            url: info.url,
+            title: info.name,
+            renderer: createRenderer(info.geometryType, info, index),
+            featureReduction: {
+              type: "cluster",
+              clusterRadius: "100px",
+              popupTemplate: {
+                title: "Cluster of {cluster_count} points",
+                content: "Zoom in to see individual points."
+              }
+            },
+            minScale: 1000000 // Adjust as needed
           });
-        default:
-          console.error(`Unsupported geometry type: ${geometryType}`);
-          return null;
-      }
-    }
 
-    let lineLayers = [];
-    let pointLayers = [];
+          return layer.load().then(() => {
+            console.log(`Layer ${info.name} loaded`);
+            console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
 
-    Promise.all(layerInfo.map((info, index) => {
-      console.log(`Creating layer for ${info.name}`);
-      const layer = new GeoJSONLayer({
-        url: info.url,
-        title: info.name
+            if (layer.geometryType === "polyline") {
+              lineLayers.push(layer);
+            } else {
+              pointLayers.push(layer);
+            }
+
+            const button = document.createElement("button");
+            button.innerHTML = info.name;
+            button.className = "layerButton active";
+            button.onclick = function() {
+              layer.visible = !layer.visible;
+              this.classList.toggle("active");
+              console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+            };
+            document.getElementById("layerButtons").appendChild(button);
+            console.log(`Button created for ${info.name}`);
+
+            return layer;
+          });
+        })).then((layers) => {
+          // Add line layers first, then point layers
+          map.addMany(lineLayers);
+          map.addMany(pointLayers);
+          console.log("All layers added to map");
+        }).catch(error => {
+          console.error("Error loading layers:", error);
+        });
+
+        // Add a check to see if layers are actually in the map
+        setTimeout(() => {
+          console.log("Layers in map:", map.layers.items.map(l => l.title));
+        }, 5000);
       });
-
-      return layer.load().then(() => {
-        console.log(`Layer ${info.name} loaded`);
-        console.log(`Geometry type for ${info.name}: ${layer.geometryType}`);
-        const renderer = createRenderer(layer.geometryType, info, index);
-        if (renderer) {
-          layer.renderer = renderer;
-          console.log(`Renderer set for ${info.name}`);
-        }
-
-        if (layer.geometryType === "polyline") {
-          lineLayers.push(layer);
-        } else {
-          pointLayers.push(layer);
-        }
-
-        const button = document.createElement("button");
-        button.innerHTML = info.name;
-        button.className = "layerButton active";
-        button.onclick = function() {
-          layer.visible = !layer.visible;
-          this.classList.toggle("active");
-          console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-        };
-        document.getElementById("layerButtons").appendChild(button);
-        console.log(`Button created for ${info.name}`);
-
-        return layer;
-      });
-    })).then((layers) => {
-      // Add line layers first, then point layers
-      map.addMany(lineLayers);
-      map.addMany(pointLayers);
-      console.log("All layers added to map");
-    }).catch(error => {
-      console.error("Error loading layers:", error);
     });
-
-    // Add a check to see if layers are actually in the map
-    setTimeout(() => {
-      console.log("Layers in map:", map.layers.items.map(l => l.title));
-    }, 5000);
-  });
-});
-</script>
+  </script>
 </body>
 </html>
