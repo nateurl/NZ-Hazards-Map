@@ -134,6 +134,23 @@ document.addEventListener("DOMContentLoaded", function() {
           })
         });
 
+} else if (info.name === "CT sites") {
+        return new SimpleRenderer({
+          symbol: new PictureMarkerSymbol({
+            url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Railicon.png",
+            width: "15px",
+            height: "15px"
+          })
+        });
+      } else {
+        return new SimpleRenderer({
+          symbol: new SimpleMarkerSymbol({
+            color: colors[index],
+            size: 8,
+            outline: { color: "white", width: 1 }
+          })
+        });
+            
             
             // add additional renders above
             return new SimpleRenderer({
