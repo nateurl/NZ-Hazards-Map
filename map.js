@@ -54,6 +54,8 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log("New scale:", newValue);
     });
 
+    const layersByName = {};
+
     function initializeLayers() {
       function createRenderer(name, index) {
         console.log(`Creating renderer for ${name}`);
@@ -107,8 +109,6 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       }
 
-      let layers = [];
-
       Promise.all(layerInfo.map((info, index) => {
         console.log(`Creating layer for ${info.name}`);
         const layer = new GeoJSONLayer({
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
-          layers.push(layer);
+          layersByName[info.name] = layer;
 
           const button = document.createElement("button");
           button.innerHTML = info.name;
@@ -146,8 +146,7 @@ document.addEventListener("DOMContentLoaded", function() {
           if (error.details) console.error(`Error details:`, error.details);
         });
       })).then(() => {
-        map.addMany(layers);
-        console.log("All layers added to map");
+        addLayersInOrder();
       }).catch(error => {
         console.error("Error in Promise.all:", error);
         if (error.details) console.error("Error details:", error.details);
@@ -157,6 +156,21 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Layers in map:", map.layers.items.map(l => l.title));
         console.log("Current map scale:", view.scale);
       }, 5000);
+    }
+
+    function addLayersInOrder() {
+      const orderOfLayers = ["Rail", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites"];
+      
+      orderOfLayers.forEach(layerName => {
+        if (layersByName[layerName]) {
+          map.add(layersByName[layerName]);
+          console.log(`Added ${layerName} to map`);
+        } else {
+          console.warn(`Layer ${layerName} not found`);
+        }
+      });
+
+      console.log("All layers added to map in specified order");
     }
   });
 });
