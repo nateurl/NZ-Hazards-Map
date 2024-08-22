@@ -1,5 +1,18 @@
 let map, view;
 
+var layerInfo = [
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals" },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points" },
+];
+
+var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
@@ -8,9 +21,8 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/layers/GeoJSONLayer",
     "esri/renderers/SimpleRenderer",
     "esri/symbols/PictureMarkerSymbol",
-    "esri/geometry/Extent",
-    "esri/renderers/HeatmapRenderer"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent, HeatmapRenderer) {
+    "esri/geometry/Extent"
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -63,20 +75,9 @@ document.addEventListener("DOMContentLoaded", function() {
           symbol: {
             type: "simple-line",
             color: colors[index],
-            width: 1,
-            offset: 2
+            width: 2
           }
         };
-      } else if (name === "Impact points") {
-        return new HeatmapRenderer({
-          colorStops: [
-            { color: "rgba(255, 255, 255, 0)", ratio: 0 },
-            { color: "rgba(255, 140, 0, 1)", ratio: 0.5 },
-            { color: "rgba(255, 0, 0, 1)", ratio: 1 }
-          ],
-          minPixelIntensity: 0,
-          maxPixelIntensity: 100
-        });
       } else {
         let iconUrl;
         switch(name) {
@@ -101,8 +102,8 @@ document.addEventListener("DOMContentLoaded", function() {
           symbol: {
             type: "picture-marker",
             url: iconUrl,
-            width: "20px",
-            height: "20px"
+            width: "24px",
+            height: "24px"
           }
         };
       }
@@ -117,16 +118,18 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" && info.name !== "Impact points" ? {
+          featureReduction: info.name !== "Rail" ? {
             type: "cluster",
-            clusterRadius: "50px",
+            clusterRadius: "100px",
+            clusterMinSize: "24px",
+            clusterMaxSize: "60px",
             popupTemplate: {
               title: "Cluster of {cluster_count} points",
               content: "Zoom in to see individual points."
             }
           } : null,
-          minScale: getMinScale(info.name),
-          maxScale: getMaxScale(info.name)
+          minScale: info.name === "Rail" ? 0 : 5000000,
+          maxScale: 0
         });
 
         return layer.load().then(() => {
@@ -161,34 +164,6 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Layers in map:", map.layers.items.map(l => l.title));
         console.log("Current map scale:", view.scale);
       }, 5000);
-    }
-
-    function getMinScale(name) {
-      switch(name) {
-        case "Rail": return 0;
-        case "Woolworths DCs": return 5000000;
-        case "Seaports": return 7000000;
-        case "Airports": return 8000000;
-        case "Inland ports": return 6000000;
-        case "CT sites": return 5500000;
-        case "Fuel terminals": return 7500000;
-        case "Impact points": return 0;
-        default: return 10000000;
-      }
-    }
-
-    function getMaxScale(name) {
-      switch(name) {
-        case "Rail": return 0;
-        case "Woolworths DCs": return 0;
-        case "Seaports": return 1000000;
-        case "Airports": return 2000000;
-        case "Inland ports": return 500000;
-        case "CT sites": return 750000;
-        case "Fuel terminals": return 1500000;
-        case "Impact points": return 0;
-        default: return 0;
-      }
     }
   });
 });
