@@ -60,22 +60,13 @@ document.addEventListener("DOMContentLoaded", function() {
     function initializeLayers() {
       function createRenderer(name, index) {
         console.log(`Creating renderer for ${name}`);
-        if (name === "Rail") {
+        if (name === "Rail" || name === "State highways") {
           return {
             type: "simple",
             symbol: {
               type: "simple-line",
               color: colors[index],
-              width: 1
-            }
-          };
-        } else if (name === "State highways") {
-          return {
-            type: "simple",
-            symbol: {
-              type: "simple-line",
-              color: "#FFD700", // Gold color for highways
-              width: 2 // Slightly thicker for highways
+              width: name === "State highways" ? 2 : 1
             }
           };
         } else if (name === "HSZ Impact points") {
@@ -149,9 +140,9 @@ document.addEventListener("DOMContentLoaded", function() {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
-          if (info.name === "HSZ Impact points" || info.name === "State highways") {
+          if (info.name === "HSZ Impact points") {
             const button = document.createElement("button");
-            button.innerHTML = `Toggle ${info.name}`;
+            button.innerHTML = `Toggle HSZ Impact Points`;
             button.className = "layerButton";
             button.onclick = function() {
               layer.visible = !layer.visible;
@@ -186,10 +177,12 @@ document.addEventListener("DOMContentLoaded", function() {
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
           map.add(layersByName[layerName]);
-          if (layerName === "HSZ Impact points" || layerName === "State highways") {
+          if (layerName === "HSZ Impact points") {
             layersByName[layerName].visible = false;
+          } else {
+            layersByName[layerName].visible = true;
           }
-          console.log(`Added ${layerName} to map`);
+          console.log(`Added ${layerName} to map. Visible: ${layersByName[layerName].visible}`);
         } else {
           console.warn(`Layer ${layerName} not found`);
         }
