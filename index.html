@@ -94,6 +94,7 @@
 
         var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
 
+        // Line 67: Updated createRenderer function
         function createRenderer(name, index) {
           console.log(`Creating renderer for ${name}`);
           if (name === "Rail") {
@@ -105,63 +106,43 @@
                 width: 1
               }
             };
-          } else if (name === "Seaports") {
-            return {
-              type: "simple",
-              symbol: {
-                type: "picture-marker",
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png",
-                width: "12px",
-                height: "12px",
-                xoffset: 5,
-                yoffset: 5
-              }
-            };
-          } else if (name === "Fuel terminals") {
-            return {
-              type: "simple",
-              symbol: {
-                type: "picture-marker",
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png",
-                width: "12px",
-                height: "15px",
-                xoffset: -5,
-                yoffset: -5
-              }
-            };
-          } else if (name === "Woolworths DCs") {
-            return {
-              type: "simple",
-              symbol: {
-                type: "picture-marker",
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png",
-                width: "15px",
-                height: "15px",
-                xoffset: 5,
-                yoffset: -5
-              }
-            };
-          } else if (name === "CT sites") {
-            return {
-              type: "simple",
-              symbol: {
-                type: "picture-marker",
-                url: "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png",
-                width: "15px",
-                height: "15px",
-                xoffset: -5,
-                yoffset: 5
-              }
-            };
           } else {
+            let iconUrl;
+            switch(name) {
+              case "Seaports":
+                iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png";
+                break;
+              case "Fuel terminals":
+                iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png";
+                break;
+              case "Woolworths DCs":
+                iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png";
+                break;
+              case "CT sites":
+                iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png";
+                break;
+              default:
+                iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
+            }
+
+            // Line 92: Added visual variables for size based on scale
             return {
               type: "simple",
               symbol: {
-                type: "simple-marker",
-                color: colors[index],
-                size: 8,
-                outline: { color: "white", width: 1 }
-              }
+                type: "picture-marker",
+                url: iconUrl,
+                width: "24px", // Adjust size as needed
+                height: "24px"
+              },
+              visualVariables: [{
+                type: "size",
+                valueExpression: "$view.scale",
+                stops: [
+                  { value: 1000000, size: 24 },
+                  { value: 5000000, size: 12 },
+                  { value: 10000000, size: 8 }
+                ]
+              }]
             };
           }
         }
@@ -176,13 +157,13 @@
             renderer: createRenderer(info.name, index),
             featureReduction: info.name !== "Rail" ? {
               type: "cluster",
-              clusterRadius: "100px",
+              clusterRadius: "50px", // Adjust cluster radius as needed
               popupTemplate: {
                 title: "Cluster of {cluster_count} points",
                 content: "Zoom in to see individual points."
               }
             } : null,
-            minScale: info.name !== "Rail" ? 1000000 : undefined // Adjust as needed
+            minScale: info.name !== "Rail" ? 10000000 : undefined // Adjust as needed
           });
 
           return layer.load().then(() => {
@@ -212,7 +193,13 @@
         // Add a check to see if layers are actually in the map
         setTimeout(() => {
           console.log("Layers in map:", map.layers.items.map(l => l.title));
+          console.log("Current map scale:", view.scale);
         }, 5000);
+
+        // Add an event listener for zoom changes
+        view.watch("scale", function(newValue) {
+          console.log("New scale:", newValue);
+        });
       });
     });
   </script>
