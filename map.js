@@ -1,169 +1,71 @@
 let map, view;
 
-var layerInfo = [
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals" },
-  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points" },
-];
+require([
+  "esri/Map",
+  "esri/views/MapView",
+  "esri/layers/GeoJSONLayer",
+  "esri/widgets/LayerList"
+], function(Map, MapView, GeoJSONLayer, LayerList) {
+  
+  map = new Map({
+    basemap: "topo-vector"
+  });
 
-var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+  view = new MapView({
+    container: "viewDiv",
+    map: map,
+    center: [174.7633, -41.2889], // Coordinates for New Zealand
+    zoom: 6
+  });
 
-document.addEventListener("DOMContentLoaded", function() {
-  console.log("DOM fully loaded and parsed");
-  require([
-    "esri/Map",
-    "esri/views/MapView",
-    "esri/layers/GeoJSONLayer",
-    "esri/renderers/SimpleRenderer",
-    "esri/symbols/PictureMarkerSymbol",
-    "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
-    console.log("Modules loaded");
-
-    map = new Map({
-      basemap: "streets-vector"
-    });
-    console.log("Map created");
-
-    view = new MapView({
-      container: "viewDiv",
-      map: map,
-      extent: new Extent({
-        xmin: 165.0,
-        ymin: -48.0,
-        xmax: 179.5,
-        ymax: -33.5,
-        spatialReference: { wkid: 4326 }
-      }),
-      constraints: {
-        minZoom: 4,
-        maxZoom: 18,
-        rotationEnabled: false,
-        geometry: new Extent({
-          xmin: 165.0,
-          ymin: -48.0,
-          xmax: 179.5,
-          ymax: -33.5,
-          spatialReference: { wkid: 4326 }
-        })
-      }
-    });
-    console.log("View created");
-
-    view.when(() => {
-      console.log("Map view is ready");
-      view.ui.add("layerControls", "bottom-right");
-      initializeLayers();
-    }, (error) => {
-      console.error("Error loading map view:", error);
-    });
-
-    view.watch("scale", function(newValue) {
-      console.log("New scale:", newValue);
-    });
-
-    function createRenderer(name, index) {
-      console.log(`Creating renderer for ${name}`);
-      if (name === "Rail") {
-        return {
-          type: "simple",
-          symbol: {
-            type: "simple-line",
-            color: colors[index],
-            width: 2
-          }
-        };
-      } else {
-        let iconUrl;
-        switch(name) {
-          case "Seaports":
-            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png";
-            break;
-          case "Fuel terminals":
-            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png";
-            break;
-          case "Woolworths DCs":
-            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png";
-            break;
-          case "CT sites":
-            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png";
-            break;
-          default:
-            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
+  function createLayer(info, index) {
+    const layer = new GeoJSONLayer({
+      url: info.url,
+      title: info.name,
+      outFields: ["*"],
+      renderer: {
+        type: "simple",
+        symbol: info.name === "Rail" ? {
+          type: "simple-line",
+          color: colors[index],
+          width: 2
+        } : {
+          type: "simple-marker",
+          color: colors[index],
+          size: 8
         }
-
-        return {
-          type: "simple",
-          symbol: {
-            type: "picture-marker",
-            url: iconUrl,
-            width: "24px",
-            height: "24px"
-          }
-        };
+      },
+      popupTemplate: {
+        title: "{name}",
+        content: "{*}"
       }
-    }
+    });
 
-    function initializeLayers() {
-      let layers = [];
+    return layer;
+  }
 
-      Promise.all(layerInfo.map((info, index) => {
-        console.log(`Creating layer for ${info.name}`);
-        const layer = new GeoJSONLayer({
-          url: info.url,
-          title: info.name,
-          renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" ? {
-            type: "cluster",
-            clusterRadius: "100px",
-            clusterMinSize: "24px",
-            clusterMaxSize: "60px",
-            popupTemplate: {
-              title: "Cluster of {cluster_count} points",
-              content: "Zoom in to see individual points."
-            }
-          } : null,
-          minScale: info.name === "Rail" ? 0 : 5000000,
-          maxScale: 0
-        });
+  layerInfo.forEach((info, index) => {
+    const layer = createLayer(info, index);
+    map.add(layer);
+  });
 
-        return layer.load().then(() => {
-          console.log(`Layer ${info.name} loaded successfully`);
-          layers.push(layer);
+  view.when(() => {
+    const layerList = new LayerList({
+      view: view,
+      container: "layerList"
+    });
 
-          const button = document.createElement("button");
-          button.innerHTML = info.name;
-          button.className = "layerButton active";
-          button.onclick = function() {
-            layer.visible = !layer.visible;
-            this.classList.toggle("active");
-            console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
-          };
-          document.getElementById("layerButtons").appendChild(button);
-
-          return layer;
-        }).catch(error => {
-          console.error(`Error loading layer ${info.name}:`, error);
-          console.error(`Layer URL: ${info.url}`);
-          if (error.details) console.error(`Error details:`, error.details);
-        });
-      })).then(() => {
-        map.addMany(layers);
-        console.log("All layers added to map");
-      }).catch(error => {
-        console.error("Error in Promise.all:", error);
-        if (error.details) console.error("Error details:", error.details);
-      });
-
-      setTimeout(() => {
-        console.log("Layers in map:", map.layers.items.map(l => l.title));
-        console.log("Current map scale:", view.scale);
-      }, 5000);
-    }
+    // Add custom layer toggle buttons
+    const layerButtons = document.getElementById("layerButtons");
+    map.layers.forEach(layer => {
+      const button = document.createElement("button");
+      button.innerHTML = layer.title;
+      button.className = "layerButton active";
+      button.onclick = function() {
+        layer.visible = !layer.visible;
+        this.classList.toggle("active");
+      };
+      layerButtons.appendChild(button);
+    });
   });
 });
