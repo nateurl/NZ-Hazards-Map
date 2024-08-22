@@ -142,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
           if (info.name === "HSZ Impact points") {
             const button = document.createElement("button");
-            button.innerHTML = `Toggle HSZ Impact Points`;
+            button.innerHTML = `Impact from Hikurangi Subduction Zone event`;
             button.className = "layerButton";
             button.onclick = function() {
               layer.visible = !layer.visible;
