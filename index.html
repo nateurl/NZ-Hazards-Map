@@ -116,6 +116,25 @@ document.addEventListener("DOMContentLoaded", function() {
             height: "15px"
           })
         }); 
+
+} else if (info.name === "Woolworths DCs") {
+        return new SimpleRenderer({
+          symbol: new PictureMarkerSymbol({
+            url: "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png",
+            width: "15px",
+            height: "15px"
+          })
+        });
+      } else {
+        return new SimpleRenderer({
+          symbol: new SimpleMarkerSymbol({
+            color: colors[index],
+            size: 8,
+            outline: { color: "white", width: 1 }
+          })
+        });
+
+            
             // add additional renders above 
           } else {
             return new SimpleRenderer({
