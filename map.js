@@ -118,7 +118,6 @@ document.addEventListener("DOMContentLoaded", function() {
           featureReduction: info.name !== "Rail" ? {
             type: "cluster",
             clusterRadius: "100px",
-            clusterMaxZoom: 14,
             popupTemplate: {
               title: "Cluster of {cluster_count} points",
               content: "Zoom in to see individual points."
