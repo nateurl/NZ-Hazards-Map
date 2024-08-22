@@ -7,8 +7,9 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/layers/GeoJSONLayer",
     "esri/renderers/SimpleRenderer",
     "esri/symbols/PictureMarkerSymbol",
+    "esri/symbols/SimpleMarkerSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, Extent) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -71,38 +72,80 @@ document.addEventListener("DOMContentLoaded", function() {
           let iconUrl;
           let iconWidth = "20px";
           let iconHeight = "20px";
+          let symbol;
+
           switch(name) {
             case "Seaports":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
               break;
             case "Fuel terminals":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
-              iconWidth = "30px";
-              iconHeight = "30px";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: "30px",
+                height: "30px"
+              };
               break;
             case "Woolworths DCs":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
               break;
             case "CT sites":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
               break;
             case "HSZ Impact Points":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/impact.png"; // Replace with actual icon
-              iconWidth = "15px"; // Adjust as needed
-              iconHeight = "15px"; // Adjust as needed
+              // Use a SimpleMarkerSymbol for HSZ Impact Points
+              symbol = {
+                type: "simple-marker",
+                color: "#FF5733", // Example color
+                size: "15px", // Size of the marker
+                outline: {
+                  color: "white", // Outline color
+                  width: 1
+                }
+              };
               break;
             default:
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
+              symbol = {
+                type: "picture-marker",
+                url: iconUrl,
+                width: iconWidth,
+                height: iconHeight
+              };
           }
 
           return {
             type: "simple",
-            symbol: {
-              type: "picture-marker",
-              url: iconUrl,
-              width: iconWidth,
-              height: iconHeight
-            }
+            symbol: symbol,
+            visualVariables: [
+              {
+                type: "size",
+                field: "ObjectID",
+                stops: [
+                  { value: 1, size: 15 },
+                  { value: 1000, size: 25 }
+                ]
+              }
+            ]
           };
         }
       }
