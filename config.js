@@ -1,6 +1,6 @@
         var layerInfo = [
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail" },
-          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "State highways" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/statehighways.geojson", name: "State highways" },
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs" },
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports" },
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports" },
