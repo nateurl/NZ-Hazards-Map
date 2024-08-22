@@ -70,12 +70,16 @@ document.addEventListener("DOMContentLoaded", function() {
           };
         } else {
           let iconUrl;
+          let iconWidth = "20px";
+          let iconHeight = "20px";
           switch(name) {
             case "Seaports":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
               break;
             case "Fuel terminals":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
+              iconWidth = "30px";
+              iconHeight = "40px";
               break;
             case "Woolworths DCs":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
@@ -92,16 +96,17 @@ document.addEventListener("DOMContentLoaded", function() {
             symbol: {
               type: "picture-marker",
               url: iconUrl,
-              width: "20px",
-              height: "20px"
+              width: iconWidth,
+              height: iconHeight
             },
             visualVariables: [
               {
                 type: "size",
+                axis: "height",
                 field: "ObjectID",
                 stops: [
-                  { value: 1, size: 15 },
-                  { value: 1000, size: 25 }
+                  { value: 1, size: name === "Fuel terminals" ? 35 : 15 },
+                  { value: 1000, size: name === "Fuel terminals ? 45 : 25 }
                 ]
               }
             ]
