@@ -56,28 +56,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const layersByName = {};
 
-    function displaceOverlappingPoints(features, buffer) {
-      const displaced = [];
-      features.forEach(feature => {
-        let point = feature.geometry;
-        let isOverlapping;
-        do {
-          isOverlapping = displaced.some(d => 
-            Math.sqrt(Math.pow(d.x - point.x, 2) + Math.pow(d.y - point.y, 2)) < buffer
-          );
-          
-          if (isOverlapping) {
-            const angle = Math.random() * 2 * Math.PI;
-            point.x += Math.cos(angle) * buffer / 2;
-            point.y += Math.sin(angle) * buffer / 2;
-          }
-        } while (isOverlapping);
-        
-        displaced.push(point);
-      });
-      return features;
-    }
-
     function initializeLayers() {
       function createRenderer(name, index) {
         console.log(`Creating renderer for ${name}`);
@@ -147,21 +125,8 @@ document.addEventListener("DOMContentLoaded", function() {
           } : null,
           minScale: info.name !== "Rail" ? 10000000 : undefined
         });
-
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
-          
-          // Apply displacement for Seaports and Fuel terminals
-          if (info.name === "Seaports" || info.name === "Fuel terminals") {
-            return layer.queryFeatures().then(result => {
-              const displacedFeatures = displaceOverlappingPoints(result.features, 0.01); // Adjust buffer as needed
-              layer.source = displacedFeatures;
-              return layer;
-            });
-          }
-          
-          return layer;
-        }).then(layer => {
           layersByName[info.name] = layer;
 
           const button = document.createElement("button");
