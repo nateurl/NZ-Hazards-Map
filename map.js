@@ -8,8 +8,9 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/renderers/SimpleRenderer",
     "esri/symbols/PictureMarkerSymbol",
     "esri/symbols/SimpleMarkerSymbol",
+    "esri/symbols/SimpleFillSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleMarkerSymbol, SimpleFillSymbol, Extent) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -68,6 +69,17 @@ document.addEventListener("DOMContentLoaded", function() {
               width: 1
             }
           };
+        } else if (name === "HSZ Impact points") {
+          return {
+            type: "simple",
+            symbol: new SimpleFillSymbol({
+              color: [255, 87, 51, 0.5], // Semi-transparent orange
+              outline: {
+                color: [255, 87, 51, 1], // Solid orange
+                width: 1
+              }
+            })
+          };
         } else {
           let iconUrl;
           let iconWidth = "20px";
@@ -77,75 +89,32 @@ document.addEventListener("DOMContentLoaded", function() {
           switch(name) {
             case "Seaports":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
-              symbol = {
-                type: "picture-marker",
-                url: iconUrl,
-                width: iconWidth,
-                height: iconHeight
-              };
               break;
             case "Fuel terminals":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
-              symbol = {
-                type: "picture-marker",
-                url: iconUrl,
-                width: "30px",
-                height: "30px"
-              };
+              iconWidth = "30px";
+              iconHeight = "30px";
               break;
             case "Woolworths DCs":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
-              symbol = {
-                type: "picture-marker",
-                url: iconUrl,
-                width: iconWidth,
-                height: iconHeight
-              };
               break;
             case "CT sites":
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png";
-              symbol = {
-                type: "picture-marker",
-                url: iconUrl,
-                width: iconWidth,
-                height: iconHeight
-              };
-              break;
-            case "HSZ Impact points":
-              // Use a SimpleMarkerSymbol for HSZ Impact points
-              symbol = {
-                type: "simple-marker",
-                color: "#FF5733", // Example color
-                size: "15px", // Size of the marker
-                outline: {
-                  color: "white", // Outline color
-                  width: 1
-                }
-              };
               break;
             default:
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
-              symbol = {
-                type: "picture-marker",
-                url: iconUrl,
-                width: iconWidth,
-                height: iconHeight
-              };
           }
+
+          symbol = {
+            type: "picture-marker",
+            url: iconUrl,
+            width: iconWidth,
+            height: iconHeight
+          };
 
           return {
             type: "simple",
-            symbol: symbol,
-            visualVariables: [
-              {
-                type: "size",
-                field: "ObjectID",
-                stops: [
-                  { value: 1, size: 15 },
-                  { value: 1000, size: 25 }
-                ]
-              }
-            ]
+            symbol: symbol
           };
         }
       }
@@ -164,10 +133,19 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
-          popupTemplate: info.name === "HSZ Impact points" ? {
-            title: "HSZ Impact points",
-            content: "Additional information: {your_field_name}" // Replace with actual field name
-          } : null
+          popupTemplate: {
+            title: "{name}",
+            content: [{
+              type: "fields",
+              fieldInfos: [{
+                fieldName: "name",
+                label: "Name"
+              }, {
+                fieldName: "description",
+                label: "Description"
+              }]
+            }]
+          }
         });
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
