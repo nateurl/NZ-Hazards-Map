@@ -1,5 +1,19 @@
 let map, view;
 
+// Layer information with scale and offset properties
+var layerInfo = [
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/rail.geojson", name: "Rail", offset: 0, minScale: 0, maxScale: 0 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/WoolworthsDCs.geojson", name: "Woolworths DCs", minScale: 5000000, maxScale: 0 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/seaports.geojson", name: "Seaports", minScale: 7000000, maxScale: 1000000 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/airports.geojson", name: "Airports", minScale: 8000000, maxScale: 2000000 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/inlandports.geojson", name: "Inland ports", minScale: 6000000, maxScale: 500000 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites", minScale: 5500000, maxScale: 750000 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals", minScale: 7500000, maxScale: 1500000 },
+  { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/impactpoints.geojson", name: "Impact points", minScale: 9000000, maxScale: 3000000 },
+];
+
+var colors = ["#1F78B4", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
   require([
@@ -54,59 +68,60 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log("New scale:", newValue);
     });
 
-    function initializeLayers() {
-      function createRenderer(name, index) {
-        console.log(`Creating renderer for ${name}`);
-        if (name === "Rail") {
-          return {
-            type: "simple",
-            symbol: {
-              type: "simple-line",
-              color: colors[index],
-              width: 1
-            }
-          };
-        } else {
-          let iconUrl;
-          switch(name) {
-            case "Seaports":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png";
-              break;
-            case "Fuel terminals":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png";
-              break;
-            case "Woolworths DCs":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png";
-              break;
-            case "CT sites":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png";
-              break;
-            default:
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
+    function createRenderer(name, index, offset) {
+      console.log(`Creating renderer for ${name}`);
+      if (name === "Rail") {
+        return {
+          type: "simple",
+          symbol: {
+            type: "simple-line",
+            color: colors[index],
+            width: 1,
+            offset: offset || index * 2
           }
-
-          return {
-            type: "simple",
-            symbol: {
-              type: "picture-marker",
-              url: iconUrl,
-              width: "20px",
-              height: "20px"
-            },
-            visualVariables: [
-              {
-                type: "size",
-                field: "ObjectID",
-                stops: [
-                  { value: 1, size: 15 },
-                  { value: 1000, size: 25 }
-                ]
-              }
-            ]
-          };
+        };
+      } else {
+        let iconUrl;
+        switch(name) {
+          case "Seaports":
+            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png";
+            break;
+          case "Fuel terminals":
+            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png";
+            break;
+          case "Woolworths DCs":
+            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png";
+            break;
+          case "CT sites":
+            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png";
+            break;
+          default:
+            iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
         }
-      }
 
+        return {
+          type: "simple",
+          symbol: {
+            type: "picture-marker",
+            url: iconUrl,
+            width: "20px",
+            height: "20px"
+          },
+          visualVariables: [
+            {
+              type: "size",
+              field: "ObjectID",
+              stops: [
+                { value: 1, size: 15 },
+                { value: 1000, size: 25 }
+              ]
+            }
+          ]
+        };
+      }
+    }
+
+    function initializeLayers() {
       let layers = [];
 
       Promise.all(layerInfo.map((info, index) => {
@@ -114,17 +129,20 @@ document.addEventListener("DOMContentLoaded", function() {
         const layer = new GeoJSONLayer({
           url: info.url,
           title: info.name,
-          renderer: createRenderer(info.name, index),
+          renderer: createRenderer(info.name, index, info.offset),
           featureReduction: info.name !== "Rail" ? {
             type: "cluster",
             clusterRadius: "100px",
+            clusterMaxZoom: 14,
             popupTemplate: {
               title: "Cluster of {cluster_count} points",
               content: "Zoom in to see individual points."
             }
           } : null,
-          minScale: info.name !== "Rail" ? 10000000 : undefined
+          minScale: info.minScale || (info.name !== "Rail" ? 10000000 : undefined),
+          maxScale: info.maxScale || 0
         });
+
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
           layers.push(layer);
