@@ -10,4 +10,4 @@
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/hszimpactpoints.geojson", name: "HSZ Impact points" },
         ];
 
-        var colors = ["#1F78B4", "#ff0000", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+        var colors = ["#1F78B4", "#ff0001", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
