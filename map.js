@@ -1,15 +1,21 @@
 let map, view;
 
 document.addEventListener("DOMContentLoaded", function() {
+  console.log("DOM fully loaded and parsed");
   require([
     "esri/Map",
     "esri/views/MapView",
     "esri/layers/GeoJSONLayer",
+    "esri/renderers/SimpleRenderer",
+    "esri/symbols/PictureMarkerSymbol",
     "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, Extent) {
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
+    console.log("Modules loaded");
+
     map = new Map({
       basemap: "streets-vector"
     });
+    console.log("Map created");
 
     view = new MapView({
       container: "viewDiv",
@@ -34,18 +40,25 @@ document.addEventListener("DOMContentLoaded", function() {
         })
       }
     });
+    console.log("View created");
 
     view.when(() => {
+      console.log("Map view is ready");
       view.ui.add("layerControls", "bottom-right");
       initializeLayers();
     }, (error) => {
       console.error("Error loading map view:", error);
     });
 
+    view.watch("scale", function(newValue) {
+      console.log("New scale:", newValue);
+    });
+
     const layersByName = {};
 
     function initializeLayers() {
       function createRenderer(name, index) {
+        console.log(`Creating renderer for ${name}`);
         if (name === "Rail") {
           return {
             type: "simple",
@@ -85,11 +98,11 @@ document.addEventListener("DOMContentLoaded", function() {
             visualVariables: [
               {
                 type: "size",
-                field: "ObjectID", // You might want to change this to a more appropriate field
-                minDataValue: 1,
-                maxDataValue: 1000,
-                minSize: 15,
-                maxSize: 25
+                field: "ObjectID",
+                stops: [
+                  { value: 1, size: 15 },
+                  { value: 1000, size: 25 }
+                ]
               }
             ]
           };
@@ -97,6 +110,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
 
       Promise.all(layerInfo.map((info, index) => {
+        console.log(`Creating layer for ${info.name}`);
         const layer = new GeoJSONLayer({
           url: info.url,
           title: info.name,
@@ -109,9 +123,9 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
-          minScale: info.name !== "Rail" ? 10000000 : 0 // Add this line back
         });
         return layer.load().then(() => {
+          console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
           const button = document.createElement("button");
@@ -120,16 +134,27 @@ document.addEventListener("DOMContentLoaded", function() {
           button.onclick = function() {
             layer.visible = !layer.visible;
             this.classList.toggle("active");
+            console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
           };
           document.getElementById("layerButtons").appendChild(button);
 
           return layer;
+        }).catch(error => {
+          console.error(`Error loading layer ${info.name}:`, error);
+          console.error(`Layer URL: ${info.url}`);
+          if (error.details) console.error(`Error details:`, error.details);
         });
       })).then(() => {
         addLayersInOrder();
       }).catch(error => {
-        console.error("Error in layer initialization:", error);
+        console.error("Error in Promise.all:", error);
+        if (error.details) console.error("Error details:", error.details);
       });
+
+      setTimeout(() => {
+        console.log("Layers in map:", map.layers.items.map(l => l.title));
+        console.log("Current map scale:", view.scale);
+      }, 5000);
     }
 
     function addLayersInOrder() {
@@ -138,10 +163,13 @@ document.addEventListener("DOMContentLoaded", function() {
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
           map.add(layersByName[layerName]);
+          console.log(`Added ${layerName} to map`);
         } else {
           console.warn(`Layer ${layerName} not found`);
         }
       });
+
+      console.log("All layers added to map in specified order");
     }
   });
 });
