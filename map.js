@@ -123,7 +123,6 @@ document.addEventListener("DOMContentLoaded", function() {
               content: "Zoom in to see individual points."
             }
           } : null,
-          minScale: info.name !== "Rail" ? 10000000 : undefined
         });
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
