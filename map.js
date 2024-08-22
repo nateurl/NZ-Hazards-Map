@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
             symbol: {
               type: "simple-line",
               color: colors[index],
-              width: name === "State highways" ? 2 : 1
+              width: 1
             }
           };
         } else if (name === "HSZ Impact points") {
