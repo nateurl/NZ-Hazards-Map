@@ -8,8 +8,9 @@ document.addEventListener("DOMContentLoaded", function() {
     "esri/layers/GeoJSONLayer",
     "esri/renderers/SimpleRenderer",
     "esri/symbols/PictureMarkerSymbol",
-    "esri/geometry/Extent"
-  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent) {
+    "esri/geometry/Extent",
+    "esri/renderers/HeatmapRenderer"
+  ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, Extent, HeatmapRenderer) {
     console.log("Modules loaded");
 
     map = new Map({
@@ -63,9 +64,19 @@ document.addEventListener("DOMContentLoaded", function() {
             type: "simple-line",
             color: colors[index],
             width: 1,
-            offset: 2  // Added offset for Rail layer
+            offset: 2
           }
         };
+      } else if (name === "Impact points") {
+        return new HeatmapRenderer({
+          colorStops: [
+            { color: "rgba(255, 255, 255, 0)", ratio: 0 },
+            { color: "rgba(255, 140, 0, 1)", ratio: 0.5 },
+            { color: "rgba(255, 0, 0, 1)", ratio: 1 }
+          ],
+          minPixelIntensity: 0,
+          maxPixelIntensity: 100
+        });
       } else {
         let iconUrl;
         switch(name) {
@@ -92,17 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
             url: iconUrl,
             width: "20px",
             height: "20px"
-          },
-          visualVariables: [
-            {
-              type: "size",
-              field: "ObjectID",
-              stops: [
-                { value: 1, size: 15 },
-                { value: 1000, size: 25 }
-              ]
-            }
-          ]
+          }
         };
       }
     }
@@ -116,15 +117,16 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" ? {
+          featureReduction: info.name !== "Rail" && info.name !== "Impact points" ? {
             type: "cluster",
-            clusterRadius: "100px",
+            clusterRadius: "50px",
             popupTemplate: {
               title: "Cluster of {cluster_count} points",
               content: "Zoom in to see individual points."
             }
           } : null,
-          minScale: info.name !== "Rail" ? 10000000 : undefined
+          minScale: getMinScale(info.name),
+          maxScale: getMaxScale(info.name)
         });
 
         return layer.load().then(() => {
@@ -159,6 +161,34 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Layers in map:", map.layers.items.map(l => l.title));
         console.log("Current map scale:", view.scale);
       }, 5000);
+    }
+
+    function getMinScale(name) {
+      switch(name) {
+        case "Rail": return 0;
+        case "Woolworths DCs": return 5000000;
+        case "Seaports": return 7000000;
+        case "Airports": return 8000000;
+        case "Inland ports": return 6000000;
+        case "CT sites": return 5500000;
+        case "Fuel terminals": return 7500000;
+        case "Impact points": return 0;
+        default: return 10000000;
+      }
+    }
+
+    function getMaxScale(name) {
+      switch(name) {
+        case "Rail": return 0;
+        case "Woolworths DCs": return 0;
+        case "Seaports": return 1000000;
+        case "Airports": return 2000000;
+        case "Inland ports": return 500000;
+        case "CT sites": return 750000;
+        case "Fuel terminals": return 1500000;
+        case "Impact points": return 0;
+        default: return 0;
+      }
     }
   });
 });
