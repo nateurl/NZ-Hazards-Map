@@ -72,16 +72,16 @@ document.addEventListener("DOMContentLoaded", function() {
           let iconUrl;
           switch(name) {
             case "Seaports":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Vessel.png";
+              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png";
               break;
             case "Fuel terminals":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/Reserves.png";
+              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png";
               break;
             case "Woolworths DCs":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/DCICON.png";
+              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/DCICON.png";
               break;
             case "CT sites":
-              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/RailIcon.png";
+              iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png";
               break;
             default:
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
