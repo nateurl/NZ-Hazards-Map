@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", function() {
         view.when(() => {
           console.log("Map view is ready");
           view.ui.add("layerControls", "bottom-right");
+            initializeLayers();
         }, (error) => {
           console.error("Error loading map view:", error);
         });
