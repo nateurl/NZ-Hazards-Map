@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
           return {
             type: "simple",
             symbol: new SimpleFillSymbol({
-              color: [255, 87, 51, 0.5], // Semi-transparent orange
+              color: [255, 87, 51, 0.3], // Semi-transparent orange
               outline: {
                 color: [255, 87, 51, 1], // Solid orange
                 width: 1
