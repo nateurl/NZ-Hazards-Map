@@ -93,3 +93,23 @@ footer {
   background: #1F78B4;
   color: white;
 }
+
+.linkedin-button {
+  display: inline-block;
+  background-color: #0077B5;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.linkedin-button:hover {
+  background-color: #005f8d;
+}
+
+.linkedin-button i {
+  margin-right: 8px;
+}
