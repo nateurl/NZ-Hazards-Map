@@ -135,13 +135,6 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" && info.name !== "AF8 Impact points" && info.name !== "State highways" ? {
-            type: "cluster",
-            clusterRadius: "100px",
-            popupTemplate: {
-              title: "Cluster of {cluster_count} points",
-              content: "Zoom in to see individual points."
-            }
           } : null,
         });
 // added AF8
