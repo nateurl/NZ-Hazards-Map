@@ -178,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addLayersInOrder() {
-      const orderOfLayers = ["Rail", "State highways", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points", "AF8 Impact points];
+      const orderOfLayers = ["Rail", "State highways", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points", "AF8 Impact points"];
       
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
