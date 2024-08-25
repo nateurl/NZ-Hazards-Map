@@ -176,8 +176,8 @@ if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
           {
             const button = document.createElement("button");
             button.innerHTML = info.name === "HSZ Impact points"
-              ? `Impact from Hikurangi Subduction Zone event`
-              : 'Impact from Alpine Fault event';
+              ? `Trigger HSZ event`
+              : 'Trigger AF8 event';
             button.className = "layerButton";
             button.onclick = function() {
               layer.visible = !layer.visible;
