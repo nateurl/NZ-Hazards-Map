@@ -135,8 +135,6 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          } : null,                         
-        });
 // added AF8
 if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
   layer.when(() => {
