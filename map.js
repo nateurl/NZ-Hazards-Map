@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const layer = new GeoJSONLayer({
           url: info.url,
           title: info.name,
-          renderer: createRenderer(info.name, index),
+          renderer: createRenderer(info.name, index)
         });
 // added AF8
 if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
