@@ -70,16 +70,21 @@ document.addEventListener("DOMContentLoaded", function() {
             }
           };
         } else if (name === "HSZ Impact points" || name === "AF8 Impact points") {
-          return {
-            type: "simple",
-            symbol: new SimpleFillSymbol({
-              color: name === "HSZ Impact points" ? [255, 87, 51, 0.3] : [51, 135, 255, 0.3], // Semi-transparent orange
-              outline: {
-                color: name === "HSZ Impact points" ? [255, 87, 51, 1] : [51, 135, 255, 0.3], // Solid orange
-                width: 1
-              }
-            })
-          };
+          const color = name === "HSZ Impact points" ? [255, 87, 51] : [51, 135, 255];
+    const fillOpacity = 0.3;
+    const outlineOpacity = name === "HSZ Impact points" ? 1 : 0.3;
+    
+    return {
+      type: "simple",
+      symbol: {
+        type: "simple-fill",
+        color: [...color, fillOpacity],
+        outline: {
+          color: [...color, outlineOpacity],
+          width: 1
+        }
+      }
+    };
 
        // added new hazard    
           
