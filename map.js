@@ -136,6 +136,16 @@ document.addEventListener("DOMContentLoaded", function() {
           title: info.name,
           renderer: createRenderer(info.name, index),
           } : null,
+                                       
+featureReduction: {
+  type: "cluster",
+  clusterRadius: "100px",
+  popupTemplate: {
+    title: "Cluster of {cluster_count} points",
+    content: "Zoom in to see individual points."
+  }
+}
+                                       
         });
 // added AF8
 if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
