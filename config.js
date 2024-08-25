@@ -8,6 +8,7 @@
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/ctsites.geojson", name: "CT sites" },
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/fuelterminals.geojson", name: "Fuel terminals" },
           { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/hszimpactpoints.geojson", name: "HSZ Impact points" },
+          { url: "https://raw.githubusercontent.com/nateurl/natesproject/master/AF8IMPACT.geojson", name: "AF8 Impact points" },
         ];
 
-        var colors = ["#1F78B4", "#ff0001", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000"];
+        var colors = ["#1F78B4", "#ff0001", "#95ec6f", "#9bc8f5", "#9efefe", "#c2987c", "#ff770c", "#ffc500", "#ff0000", "#ff0000"];
