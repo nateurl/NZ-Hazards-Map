@@ -135,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
           url: info.url,
           title: info.name,
           renderer: createRenderer(info.name, index),
-          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" && info.name !== "State highways" ? {
+          featureReduction: info.name !== "Rail" && info.name !== "HSZ Impact points" && info.name !== "AF8 Impact points" && info.name !== "State highways" ? {
             type: "cluster",
             clusterRadius: "100px",
             popupTemplate: {
@@ -144,6 +144,30 @@ document.addEventListener("DOMContentLoaded", function() {
             }
           } : null,
         });
+// added AF8
+if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
+  layer.when(() => {
+    if (layer.geometryType === "point") {
+      const color = info.name === "HSZ Impact points" ? [255, 87, 51] : [51, 135, 255];
+      const fillOpacity = 0.3;
+      const outlineOpacity = info.name === "HSZ Impact points" ? 1 : 0.3;
+      
+      layer.renderer = {
+        type: "simple",
+        symbol: {
+          type: "simple-marker",
+          color: [...color, fillOpacity],
+          outline: {
+            color: [...color, outlineOpacity],
+            width: 1
+          },
+          size: 8
+        }
+      };
+    }
+  });
+}
+        
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
