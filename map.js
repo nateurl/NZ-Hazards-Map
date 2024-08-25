@@ -143,9 +143,12 @@ document.addEventListener("DOMContentLoaded", function() {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
-          if (info.name === "HSZ Impact points") {
+          if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") 
+          {
             const button = document.createElement("button");
-            button.innerHTML = `Impact from Hikurangi Subduction Zone event`;
+            button.innerHTML = info.html === "HSZ Impact points"
+              ? `Impact from Hikurangi Subduction Zone event`
+              : 'Impact from Alpine Fault event';
             button.className = "layerButton";
             button.onclick = function() {
               layer.visible = !layer.visible;
@@ -175,12 +178,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function addLayersInOrder() {
-      const orderOfLayers = ["Rail", "State highways", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points"];
+      const orderOfLayers = ["Rail", "State highways", "Fuel terminals", "Seaports", "Woolworths DCs", "CT sites", "HSZ Impact points", "AF8 Impact points];
       
       orderOfLayers.forEach(layerName => {
         if (layersByName[layerName]) {
           map.add(layersByName[layerName]);
-          if (layerName === "HSZ Impact points") {
+          if (layerName === "HSZ Impact points" || layerName === "AF8 Impact points") {
             layersByName[layerName].visible = false;
           } else {
             layersByName[layerName].visible = true;
