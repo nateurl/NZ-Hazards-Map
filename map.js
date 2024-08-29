@@ -1,4 +1,5 @@
 let map, view;
+let infoPopup, popupTitle, popupContent, closePopupButton;
 
 document.addEventListener("DOMContentLoaded", function() {
   console.log("DOM fully loaded and parsed");
@@ -13,6 +14,13 @@ document.addEventListener("DOMContentLoaded", function() {
   ], function(Map, MapView, GeoJSONLayer, SimpleRenderer, PictureMarkerSymbol, SimpleFillSymbol, Extent) {
     console.log("Modules loaded");
 
+    infoPopup = document.getElementById("infoPopup");
+    popupTitle = document.getElementById("popupTitle");
+    popupContent = document.getElementById("popupContent");
+    closePopupButton = document.getElementById("closePopup");
+
+    closePopupButton.addEventListener("click", closePopup);
+    
     map = new Map({
       basemap: "dark-gray-vector"
     });
@@ -71,23 +79,20 @@ document.addEventListener("DOMContentLoaded", function() {
           };
         } else if (name === "HSZ Impact points" || name === "AF8 Impact points") {
           const color = name === "HSZ Impact points" ? [255, 87, 51] : [51, 135, 255];
-    const fillOpacity = 0.3;
-    const outlineOpacity = name === "HSZ Impact points" ? 1 : 0.3;
-    
-    return {
-      type: "simple",
-      symbol: {
-        type: "simple-fill",
-        color: [...color, fillOpacity],
-        outline: {
-          color: [...color, outlineOpacity],
-          width: 1
-        }
-      }
-    };
-
-       // added new hazard    
+          const fillOpacity = 0.3;
+          const outlineOpacity = name === "HSZ Impact points" ? 1 : 0.3;
           
+          return {
+            type: "simple",
+            symbol: {
+              type: "simple-fill",
+              color: [...color, fillOpacity],
+              outline: {
+                color: [...color, outlineOpacity],
+                width: 1
+              }
+            }
+          };
         } else {
           let iconUrl;
           switch(name) {
@@ -136,36 +141,35 @@ document.addEventListener("DOMContentLoaded", function() {
           title: info.name,
           renderer: createRenderer(info.name, index)
         });
-// added AF8
-if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
-  layer.when(() => {
-    if (layer.geometryType === "point") {
-      const color = info.name === "HSZ Impact points" ? [255, 87, 51] : [51, 135, 255];
-      const fillOpacity = 0.3;
-      const outlineOpacity = info.name === "HSZ Impact points" ? 1 : 0.3;
-      
-      layer.renderer = {
-        type: "simple",
-        symbol: {
-          type: "simple-marker",
-          color: [...color, fillOpacity],
-          outline: {
-            color: [...color, outlineOpacity],
-            width: 1
-          },
-          size: 8
+
+        if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
+          layer.when(() => {
+            if (layer.geometryType === "point") {
+              const color = info.name === "HSZ Impact points" ? [255, 87, 51] : [51, 135, 255];
+              const fillOpacity = 0.3;
+              const outlineOpacity = info.name === "HSZ Impact points" ? 1 : 0.3;
+              
+              layer.renderer = {
+                type: "simple",
+                symbol: {
+                  type: "simple-marker",
+                  color: [...color, fillOpacity],
+                  outline: {
+                    color: [...color, outlineOpacity],
+                    width: 1
+                  },
+                  size: 8
+                }
+              };
+            }
+          });
         }
-      };
-    }
-  });
-}
         
         return layer.load().then(() => {
           console.log(`Layer ${info.name} loaded successfully`);
           layersByName[info.name] = layer;
 
-          if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") 
-          {
+          if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
             const button = document.createElement("button");
             button.innerHTML = info.name === "HSZ Impact points"
               ? `Trigger HSZ event`
@@ -175,6 +179,12 @@ if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
               layer.visible = !layer.visible;
               this.classList.toggle("active");
               console.log(`Toggled visibility for ${info.name}: ${layer.visible}`);
+              
+              if (layer.visible) {
+                showPopup(info.name);
+              } else {
+                closePopup();
+              }
             };
             document.getElementById("layerButtons").appendChild(button);
           }
@@ -196,6 +206,21 @@ if (info.name === "HSZ Impact points" || info.name === "AF8 Impact points") {
         console.log("Layers in map:", map.layers.items.map(l => l.title));
         console.log("Current map scale:", view.scale);
       }, 5000);
+    }
+
+    function showPopup(layerName) {
+      if (layerName === "HSZ Impact points") {
+        popupTitle.textContent = "HSZ Impact";
+        popupContent.textContent = "Information about HSZ impact..."; // Replace with actual content
+      } else if (layerName === "AF8 Impact points") {
+        popupTitle.textContent = "Alpine Fault 8 Impact";
+        popupContent.textContent = "Information about Alpine Fault 8 impact..."; // Replace with actual content
+      }
+      infoPopup.style.display = "block";
+    }
+
+    function closePopup() {
+      infoPopup.style.display = "none";
     }
 
     function addLayersInOrder() {
