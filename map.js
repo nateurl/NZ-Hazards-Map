@@ -211,11 +211,11 @@ document.addEventListener("DOMContentLoaded", function() {
     function showPopup(layerName) {
       if (layerName === "HSZ Impact points") {
         popupTitle.textContent = "HSZ Impact";
-        popupContent.textContent = "Nominal number of containers impacted daily for the impacted seaports: 
-          CentrePort: 
-          Marlborough Port:
-          Napier Port:
-          Gisborne Port: not a container port"; 
+        popupContent.textContent = "Nominal number of containers impacted daily for the impacted seaports\\: 
+          CentrePort\\: 
+          Marlborough Port\\:
+          Napier Port\\:
+          Gisborne Port\\: not a container port"; 
       } else if (layerName === "AF8 Impact points") {
         popupTitle.textContent = "Alpine Fault 8 Impact";
         popupContent.textContent = "Information about Alpine Fault 8 impact...";
