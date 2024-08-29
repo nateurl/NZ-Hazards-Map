@@ -212,7 +212,7 @@ function showPopup(layerName) {
     if (layerName === "HSZ Impact points") {
         popupTitle.textContent = "HSZ Impact";
         popupContent.textContent = `Nominal number of containers impacted daily for the impacted seaports:
-          CentrePort:
+          CentrePort: 262
           Marlborough Port:
           Napier Port: 608 TEU
           Gisborne Port: not a container port`;
