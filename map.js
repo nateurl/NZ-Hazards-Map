@@ -215,25 +215,24 @@ function showPopup(layerName) {
       <p>Critical transport infrastructure damaged:</p>
       <ul>
         <li>Eastland Port</li>
-         <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+         <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Napier Port</li>
-       <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+       <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Napier fuel terminal</li>
-        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Napier container transfer site</li>
-        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>CentrePort, Wellington</li>
-         <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+         <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Wellington's fuel terminals</li>
-        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Port Marlborough</li>
-         <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+         <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Marlborough container transfer site</li>
-        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="HSZ Impact" style="width: 20px; height: auto;">
+        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="HSZ Impact" style="width: 15px; height: auto;">
         <li>Sections of state highways and rail lines</li>
       </ul>
       <p>20 foot containers impacted each day: TBC</p>
-      <img src="path/to/hsz_impact_image.png" alt="HSZ Impact" style="max-width: 100%; height: auto;">
     `;
   } else if (layerName === "AF8 Impact points") {
     popupTitle.textContent = "Alpine Fault 8 Impact";
