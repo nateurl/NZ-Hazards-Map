@@ -211,10 +211,10 @@ document.addEventListener("DOMContentLoaded", function() {
 function showPopup(layerName) {
     if (layerName === "HSZ Impact points") {
         popupTitle.textContent = "HSZ Impact";
-        popupContent.textContent = `Nominal number of containers impacted daily for the impacted seaports:
+        popupContent.textContent = `Nominal number of TEU impacted daily:
           CentrePort: 262
-          Marlborough Port:
-          Napier Port: 608 TEU
+          Marlborough Port: TBC
+          Napier Port: 608
           Gisborne Port: not a container port`;
       } else if (layerName === "AF8 Impact points") {
         popupTitle.textContent = "Alpine Fault 8 Impact";
