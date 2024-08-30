@@ -211,11 +211,17 @@ document.addEventListener("DOMContentLoaded", function() {
 function showPopup(layerName) {
     if (layerName === "HSZ Impact points") {
         popupTitle.textContent = "HSZ Impact";
-        popupContent.textContent = `Nominal number of TEU impacted daily:
-          CentrePort: 262
-          Marlborough Port: TBC
-          Napier Port: 608
-          Gisborne Port: not a container port`;
+        popupContent.textContent = `Critical transport infrastructure damaged:
+        Eastland Port
+        Napier Port
+        Napier fuel terminal
+        Napier container transfer site
+        CentrePort, Wellington
+        Wellington's fuel terminals
+        Port Marlborough
+        Marlborough container transfer site
+        Sections of state highways and rail lines.
+        20 foot containers impacted each day: TBC `;
       } else if (layerName === "AF8 Impact points") {
         popupTitle.textContent = "Alpine Fault 8 Impact";
         popupContent.textContent = "Information about Alpine Fault 8 impact...";
