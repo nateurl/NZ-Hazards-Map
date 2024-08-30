@@ -207,27 +207,40 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Current map scale:", view.scale);
       }, 5000);
     }
-
+//added pngs
 function showPopup(layerName) {
-    if (layerName === "HSZ Impact points") {
-        popupTitle.textContent = "HSZ Impact";
-        popupContent.textContent = `Critical transport infrastructure damaged:
-        Eastland Port
-        Napier Port
-        Napier fuel terminal
-        Napier container transfer site
-        CentrePort, Wellington
-        Wellington's fuel terminals
-        Port Marlborough
-        Marlborough container transfer site
-        Sections of state highways and rail lines.
-        20 foot containers impacted each day: TBC `;
-      } else if (layerName === "AF8 Impact points") {
-        popupTitle.textContent = "Alpine Fault 8 Impact";
-        popupContent.textContent = "Information about Alpine Fault 8 impact...";
-      }
-      infoPopup.style.display = "block";
-    }
+  if (layerName === "HSZ Impact points") {
+    popupTitle.textContent = "HSZ Impact";
+    popupContent.innerHTML = `
+      <p>Critical transport infrastructure damaged:</p>
+      <ul>
+        <li>Eastland Port</li>
+        <li>Napier Port</li>
+        <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="HSZ Impact" style="max-width: 100%; height: auto;">
+        <li>Napier fuel terminal</li>
+        
+        <li>Napier container transfer site</li>
+        <li>CentrePort, Wellington</li>
+        <li>Wellington's fuel terminals</li>
+        <li>Port Marlborough</li>
+        <li>Marlborough container transfer site</li>
+        <li>Sections of state highways and rail lines</li>
+      </ul>
+      <p>20 foot containers impacted each day: TBC</p>
+      <img src="path/to/hsz_impact_image.png" alt="HSZ Impact" style="max-width: 100%; height: auto;">
+    `;
+  } else if (layerName === "AF8 Impact points") {
+    popupTitle.textContent = "Alpine Fault 8 Impact";
+    popupContent.innerHTML = `
+      <p>Information about Alpine Fault 8 impact...</p>
+      <img src="path/to/af8_impact_image.png" alt="AF8 Impact" style="max-width: 100%; height: auto;">
+    `;
+  }
+  infoPopup.style.display = "block";
+}
+
+
+    // added pngs
 
     function closePopup() {
       infoPopup.style.display = "none";
