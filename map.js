@@ -254,9 +254,13 @@ function showPopup(layerName) {
 </p>
     `;
   } else if (layerName === "AF8 Impact points") {
-    popupTitle.textContent = "Alpine Fault 8 Impact";
+    popupTitle.textContent = "Impact from a Alpine Fault Maginutude 8 Earthquake";
     popupContent.innerHTML = `
-      <p>Information about Alpine Fault 8 impact...</p>
+      <p> Critical infrastrucure damaged: </p>
+  <ul style="list-style-type: none; padding-left: 0;">
+  <li style="display: flex; align-items: center;">
+ State Highways unavailable: SH6, SH63, (and likely) SH65 and SH7
+ </li>
     `;
   }
   infoPopup.style.display = "block";
