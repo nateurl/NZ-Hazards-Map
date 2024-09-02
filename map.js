@@ -223,7 +223,7 @@ function showPopup(layerName) {
   </li>
   <li style="display: flex; align-items: center;">
     Napier fuel terminal
-    <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="Reserves" style="width: 10px; height: auto; margin-left: 5px;">
+    <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="Reserves" style="width: 15px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
     Napier container transfer site
@@ -235,7 +235,7 @@ function showPopup(layerName) {
   </li>
   <li style="display: flex; align-items: center;">
     Wellington's fuel terminals
-    <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="Reserves" style="width: 10px; height: auto; margin-left: 5px;">
+    <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Reserves.png" alt="Reserves" style="width: 15px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
     Port Marlborough
@@ -249,8 +249,8 @@ function showPopup(layerName) {
     Sections of state highways and rail lines
   </li>
 </ul>
-<p>*870 twenty-foot equivalent containers impacted daily
-&#x1FAB5; 8,684 tonnes of export logs impacted daily
+<p>*870 twenty-foot equivalent containers impacted daily &
+ 8,684 tonnes of export logs &#x1FAB5; impacted daily
 </p>
     `;
   } else if (layerName === "AF8 Impact points") {
