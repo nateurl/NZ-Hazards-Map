@@ -41,22 +41,38 @@
             bottom: 0;
             width: 100%;
         }
+        .home-button {
+            background: none; /* Remove background */
+            color: #0077B5; /* Match the "Connect with Me" text color */
+            padding: 0; /* Remove padding */
+            text-decoration: none; /* Remove underline */
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            margin-left: 20px; /* Space between title and button */
+            transition: color 0.3s ease;
+        }
+        .home-button:hover {
+            color: #005f8d; /* Darker shade on hover */
+        }
     </style>
 </head>
 <body>
     <header>
-        <h3>Connect with me</h3>
-        <a href="http://www.mverse.co.nz/" class="home-button">Home</a> <!-- Home Button -->
+        <h1>Connect with Me</h1>
+        <a href="index.html" class="home-button">Home</a> <!-- Home Button -->
     </header>
     <main>
         <section class="profile-section">
-            <img src="https://media.licdn.com/dms/image/v2/D5635AQEyid05VACr0w/profile-framedphoto-shrink_400_400/profile-framedphoto-shrink_400_400/0/1723668742069?e=1725854400&v=beta&t=BMNQFhCMQaMKQXYPOR9EiWvisXYStuUHR0BJZ65FEZs" alt="Nathan Brutsch" class="profile-picture">
+            <img src="https://via.placeholder.com/150" alt="Nathan Brutsch" class="profile-picture">
             <h2>Nathan Brutsch</h2>
-            <p>Passionate about Supply Chain Management</p>
+            <p>Professional Web Developer & LinkedIn Enthusiast</p>
             <a href="https://www.linkedin.com/in/nathanbrutsch" class="linkedin-button" target="_blank" rel="noopener noreferrer">
                 <i class="fab fa-linkedin"></i> Connect on LinkedIn
             </a>
         </section>
     </main>
+    <footer>
+        <p>&copy; 2024 Nathan Brutsch. All rights reserved.</p>
+    </footer>
 </body>
 </html>
