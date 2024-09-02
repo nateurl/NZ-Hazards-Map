@@ -111,7 +111,6 @@ document.addEventListener("DOMContentLoaded", function() {
             default:
               iconUrl = "https://raw.githubusercontent.com/nateurl/natesproject/master/default-icon.png";
           }
-
           return {
             type: "simple",
             symbol: {
@@ -251,7 +250,7 @@ function showPopup(layerName) {
   </li>
 </ul>
 <p>*870 twenty-foot equivalent containers impacted daily
-#x1FAB5 8,684 tonnes of export logs impacted daily
+&#x1FAB5; 8,684 tonnes of export logs impacted daily
 </p>
     `;
   } else if (layerName === "AF8 Impact points") {
