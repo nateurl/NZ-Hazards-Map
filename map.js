@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function() {
 //added pngs
 function showPopup(layerName) {
   if (layerName === "HSZ Impact points") {
-    popupTitle.textContent = "HSZ Impact";
+    popupTitle.textContent = "Impact from a Hikurangi Subduction Zone Earthquake and Tsunami";
     popupContent.innerHTML = `
     <p>Critical transport infrastructure damaged:</p>
 <ul style="list-style-type: none; padding-left: 0;">
