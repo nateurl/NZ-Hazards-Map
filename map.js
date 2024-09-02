@@ -259,7 +259,10 @@ function showPopup(layerName) {
       <p> Critical infrastrucure damaged: </p>
   <ul style="list-style-type: none; padding-left: 0;">
   <li style="display: flex; align-items: center;">
- State Highways unavailable: SH6, SH63, (and likely) SH65 and SH7
+ State Highways unavailable &#x1F6E3; include SH6, SH63, (and likely) SH65 and SH7 
+ </li>
+   <li style="display: flex; align-items: center;">
+Midland Rail Line &#x1F689;
  </li>
     `;
   }
