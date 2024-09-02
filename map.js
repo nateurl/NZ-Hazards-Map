@@ -259,7 +259,7 @@ function showPopup(layerName) {
       <p> Critical infrastrucure damaged: </p>
   <ul style="list-style-type: none; padding-left: 0;">
   <li style="display: flex; align-items: center;">
- State Highways unavailable &#x1F6E3; include SH6 and SH73 going to the West Coast, SH63, (and likely) SH65, SH7 & SH94 near Milford Sound
+ State Highways &#x1F6E3; 6, 73 and 7 going to the West Coast, 63 and the end of SH65 to Springs Junction, & SH94 to the Milford Sound
  </li>
    <li style="display: flex; align-items: center;">
 Midland Rail Line to Greymouth &#x1F689;
