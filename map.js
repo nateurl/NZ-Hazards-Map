@@ -259,15 +259,15 @@ function showPopup(layerName) {
       <p> Critical infrastrucure damaged: </p>
   <ul style="list-style-type: none; padding-left: 0;">
   <li style="display: flex; align-items: center;">
- State highways (SH) &#x1F6E3; SH6, SH73 and SH7 to the West Coast </li>
+ State highways (SH) SH6, SH73 and SH7 to the West Coast &#x1F6E3;</li>
    <li style="display: flex; align-items: center;">
-   SH65 near Springs Junction
+   SH65 near Springs Junction &#x1F6E3;
    </li>
      <li style="display: flex; align-items: center;">
-    SH94 near Milford Sound
+    SH94 to Milford Sound &#x1F6E3;
     </li> 
        <li style="display: flex; align-items: center;"> 
-  SH80 near Mount Cook 
+  SH80 to Mount Cook &#x1F6E3;
   </li>
    <li style="display: flex; align-items: center;">
 Midland Rail Line to Greymouth &#x1F689;
