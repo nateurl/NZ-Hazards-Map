@@ -218,7 +218,7 @@ function showPopup(layerName) {
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="Vessel" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
-    Napier Port*
+    Napier Port
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="Vessel" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
@@ -230,7 +230,7 @@ function showPopup(layerName) {
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="Rail" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
-    CentrePort, Wellington*
+    CentrePort, Wellington
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="Vessel" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
@@ -246,11 +246,11 @@ function showPopup(layerName) {
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="Rail" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
-    Sections of state highways and rail lines
+    Sections of state highways &#x1F6E3; and rail lines &#x1F689;
   </li>
 </ul>
-<p>*870 twenty-foot equivalent containers impacted daily &
- 8,684 tonnes of export logs &#x1FAB5; impacted daily
+<p>Daily impact: 870 twenty-foot equivalent containers &#127959; &
+ 8,684 tonnes of export logs &#x1FAB5; 
 </p>
     `;
   } else if (layerName === "AF8 Impact points") {
