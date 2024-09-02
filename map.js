@@ -250,21 +250,17 @@ function showPopup(layerName) {
     Sections of state highways and rail lines
   </li>
 </ul>
-<p>20 foot containers impacted each day: TBC</p>
+<p>870 twenty-foot equivalent containers impacted daily</p>
     `;
   } else if (layerName === "AF8 Impact points") {
     popupTitle.textContent = "Alpine Fault 8 Impact";
     popupContent.innerHTML = `
       <p>Information about Alpine Fault 8 impact...</p>
-      <img src="path/to/af8_impact_image.png" alt="AF8 Impact" style="max-width: 100%; height: auto;">
     `;
   }
   infoPopup.style.display = "block";
 }
-
-
-    // added pngs
-
+// added pngs //
     function closePopup() {
       infoPopup.style.display = "none";
     }
