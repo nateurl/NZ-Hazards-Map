@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", function() {
             symbol: {
               type: "simple-line",
               color: colors[index],
-              width: 1
+              width: 0.5
             }
           };
         } else if (name === "HSZ Impact points" || name === "AF8 Impact points") {
@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function() {
               color: [...color, fillOpacity],
               outline: {
                 color: [...color, outlineOpacity],
-                width: 1
+                width: 0.5
               }
             }
           };
