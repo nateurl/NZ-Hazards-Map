@@ -250,7 +250,9 @@ function showPopup(layerName) {
     Sections of state highways and rail lines
   </li>
 </ul>
-<p>*870 twenty-foot equivalent containers impacted daily</p>
+<p>*870 twenty-foot equivalent containers impacted daily
+#x1FAB5 8,684 tonnes of export logs impacted daily
+</p>
     `;
   } else if (layerName === "AF8 Impact points") {
     popupTitle.textContent = "Alpine Fault 8 Impact";
