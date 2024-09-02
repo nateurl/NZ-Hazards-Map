@@ -219,7 +219,7 @@ function showPopup(layerName) {
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="Vessel" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
-    Napier Port
+    Napier Port*
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="Vessel" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
@@ -231,7 +231,7 @@ function showPopup(layerName) {
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/RailIcon.png" alt="Rail" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
-    CentrePort, Wellington
+    CentrePort, Wellington*
     <img src="https://raw.githubusercontent.com/nateurl/natesproject/master/icons/Vessel.png" alt="Vessel" style="width: 20px; height: auto; margin-left: 5px;">
   </li>
   <li style="display: flex; align-items: center;">
